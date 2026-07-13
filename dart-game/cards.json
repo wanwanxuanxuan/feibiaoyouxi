@@ -1,0 +1,33 @@
+{
+  "UVQ21-GK3PL-NHPX8-KROKF-2EJHO": {
+    "code": "UVQ21-GK3PL-NHPX8-KROKF-2EJHO",
+    "used": true,
+    "createdAt": 1783864762598,
+    "usedAt": 1783864781396,
+    "usedBy": "guest"
+  },
+  "E35KE-NRP4K-AVM49-ST2XU-4VX2P": {
+    "code": "E35KE-NRP4K-AVM49-ST2XU-4VX2P",
+    "used": false,
+    "createdAt": 1783864762598
+  },
+  "3VFLZ-HZ4JS-WDXT1-FBWL2-34LLM": {
+    "code": "3VFLZ-HZ4JS-WDXT1-FBWL2-34LLM",
+    "used": false,
+    "createdAt": 1783864762598
+  },
+  "S04IH-OLJ0E-GV543-1T0JH-2L11W": {
+    "code": "S04IH-OLJ0E-GV543-1T0JH-2L11W",
+    "used": true,
+    "createdAt": 1783865160031,
+    "usedAt": 1783865172260,
+    "usedBy": "guest"
+  },
+  "O5ZSL-1U0Z5-1UDEU-8B2EI-MOUY7": {
+    "code": "O5ZSL-1U0Z5-1UDEU-8B2EI-MOUY7",
+    "used": true,
+    "createdAt": 1783920833745,
+    "usedAt": 1783920875671,
+    "usedBy": "guest"
+  }
+}
