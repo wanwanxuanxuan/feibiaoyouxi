@@ -1,0 +1,3266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codexa</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded" rel="stylesheet">
+<style>
+  /* ========== M3 配色方案 (Purple Light) ========== */
+  :root {
+    --primary: #6750A4;
+    --on-primary: #FFFFFF;
+    --primary-container: #EADDFF;
+    --on-primary-container: #21005D;
+    --secondary: #635A75;
+    --secondary-container: #E8DEF8;
+    --on-secondary-container: #1D192B;
+    --tertiary-container: #FFD8E4;
+    --on-tertiary-container: #31111D;
+    --surface: #FEF7FF;
+    --surface-container-low: #F7F2FA;
+    --surface-container: #F3EDF7;
+    --surface-container-high: #ECE6F0;
+    --surface-container-highest: #E6E0E9;
+    --on-surface: #1D1B20;
+    --on-surface-variant: #49454F;
+    --outline: #79747E;
+    --outline-variant: #CAC4D0;
+    --inverse-surface: #322F35;
+    --inverse-on-surface: #F5EFF7;
+    --inverse-primary: #D0BCFF;
+    --error: #B3261E;
+    --on-error: #FFFFFF;
+    --error-container: #F9DEDC;
+    --on-error-container: #410E0B;
+
+    --md-sys-shape-corner-extra-large: 28px;
+    --md-sys-shape-corner-large: 20px;
+    --md-sys-shape-corner-medium: 12px;
+    --md-sys-shape-corner-small: 8px;
+    --md-sys-shape-corner-full: 9999px;
+
+    --md-sys-elevation-3: 0 4px 8px 3px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--surface);
+    color: var(--on-surface);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .material-symbols-rounded {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ========== 屏幕切换 ========== */
+  .screen {
+    position: absolute;
+    inset: 0;
+    padding: 16px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .screen.active { opacity: 1; pointer-events: auto; }
+
+  /* 屏幕过渡 */
+  .screen.zoom-in { animation: zoomIn 0.35s ease forwards; }
+  .screen.slide-up { animation: slideUp 0.35s ease forwards; }
+  .screen.slide-right { animation: slideRight 0.35s ease forwards; }
+  .screen.slide-left { animation: slideLeft 0.35s ease forwards; }
+  .screen.fade-out { animation: fadeOut 0.3s ease forwards; }
+
+  @keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes slideLeft {
+    from { opacity: 0; transform: translateX(-100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes fadeOut {
+    to { opacity: 0; }
+  }
+
+  /* ========== 通用容器 ========== */
+  .container-box {
+    background: var(--surface-container-high);
+    border-radius: var(--md-sys-shape-corner-extra-large);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ========== 按钮 ========== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 56px;
+    padding: 0 24px;
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-filled { background: var(--primary); color: var(--on-primary); }
+  .btn-filled:hover { background: #5A4291; }
+  .btn-tonal { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .btn-tonal:hover { background: #DBCFEB; }
+  .btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--outline);
+  }
+  .btn-outline:hover { background: var(--surface-container-high); }
+
+  /* 相连按钮组 */
+  .btn-group {
+    display: inline-flex;
+    border-radius: var(--md-sys-shape-corner-full);
+    overflow: visible;
+  }
+  .btn-group .btn {
+    border-radius: 0;
+    margin: 0;
+  }
+  .btn-group .btn:first-child { border-radius: var(--md-sys-shape-corner-full) 8px 8px var(--md-sys-shape-corner-full); }
+  .btn-group .btn:last-child { border-radius: 8px var(--md-sys-shape-corner-full) var(--md-sys-shape-corner-full) 8px; }
+  .btn-group .btn:only-child { border-radius: var(--md-sys-shape-corner-full); }
+  .btn-group .btn + .btn { margin-left: 3px; }
+
+  /* ========== FAB ========== */
+  .fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--md-sys-elevation-3);
+    transition: all 0.2s ease;
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+  }
+  .fab:active { transform: scale(0.92); }
+  .fab-filled { background: var(--primary); color: var(--on-primary); }
+
+  /* ========== 图标按钮 ========== */
+  .icon-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: var(--on-surface-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .icon-btn:active { transform: scale(0.92); }
+  .icon-btn:hover { background: var(--surface-container-high); }
+  .icon-btn-tonal {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+  }
+  .icon-btn-tonal:hover { background: #DBCFEB; }
+  .icon-btn-xs { width: 32px; height: 32px; }
+  .icon-btn-xs .material-symbols-rounded { font-size: 18px; }
+
+  /* ========== 屏幕1: 主编辑器 ========== */
+  .screen1-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .logo-placeholder {
+    width: 200px;
+    height: 80px;
+    border-radius: 20px;
+    background: var(--surface-container-highest);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--on-surface-variant);
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--primary-container), var(--tertiary-container));
+    color: var(--on-primary-container);
+  }
+  .logo-placeholder .material-symbols-rounded { font-size: 36px; margin-right: 8px; }
+  .top-btn-group {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 12px;
+  }
+  .screen1-middle {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    height: calc(100% - 100px);
+    position: relative;
+  }
+  .file-tree-container {
+    width: 240px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .editor-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* 文件树 */
+  .file-tree-header {
+    padding: 12px 16px;
+    font-weight: 500;
+    color: var(--on-surface-variant);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .file-tree {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 4px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .tree-children {
+    position: relative;
+  }
+  .tree-children::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--outline-variant);
+  }
+  .tree-row {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .tree-row:hover { background: var(--surface-container); }
+  .tree-row.selected { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .tree-row.drag-over { background: var(--primary-container); outline: 2px dashed var(--primary); }
+  .tree-row.dragging { opacity: 0.4; }
+  .tree-indent {
+    display: inline-block;
+    width: 20px;
+    flex-shrink: 0;
+  }
+  .tree-icon {
+    font-size: 20px;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+  .tree-label {
+    cursor: pointer;
+    user-select: none;
+  }
+  .file-tree .folder-icon { color: var(--primary); }
+  .file-tree .file-icon { color: var(--on-surface-variant); }
+  .file-tree .empty {
+    text-align: center;
+    color: var(--on-surface-variant);
+    padding: 24px 12px;
+    font-size: 13px;
+  }
+
+  /* 编辑器 */
+  .editor-header {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--outline-variant);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .editor-tabs {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 6px 12px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    color: var(--on-surface-variant);
+  }
+  .tab.active { background: var(--surface-container); color: var(--on-surface); }
+  .tab .close-tab {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .tab .close-tab:hover { background: var(--outline-variant); }
+
+  .editor-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    background: var(--surface-container-low);
+  }
+  .line-numbers {
+    padding: 12px 8px;
+    text-align: right;
+    color: var(--on-surface-variant);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    background: var(--surface-container);
+    border-right: 1px solid var(--outline-variant);
+    user-select: none;
+    overflow: hidden;
+    min-width: 48px;
+    white-space: pre;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  .code-area {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    outline: none;
+    resize: none;
+    background: transparent;
+    color: var(--on-surface);
+    font-family: 'Roboto Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre;
+    overflow: auto;
+    tab-size: 4;
+  }
+  .editor-placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--on-surface-variant);
+    gap: 12px;
+  }
+  .editor-placeholder .material-symbols-rounded { font-size: 64px; opacity: 0.4; }
+
+  /* 自动补全下拉 */
+  .autocomplete {
+    position: absolute;
+    z-index: 9999;
+    background: var(--surface-container-low);
+    border: 1px solid var(--outline-variant);
+    border-radius: 12px;
+    box-shadow: var(--md-sys-elevation-3);
+    max-height: 200px;
+    overflow-y: auto;
+    min-width: 180px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+    display: none;
+  }
+  .autocomplete.show { display: block; }
+  .autocomplete-item {
+    padding: 6px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--on-surface);
+    border-radius: 0;
+  }
+  .autocomplete-item:hover { background: var(--surface-container); }
+  .autocomplete-item.active { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .autocomplete-item .ac-keyword { font-weight: 500; }
+  .autocomplete-item .ac-kind {
+    font-size: 10px;
+    color: var(--on-surface-variant);
+    margin-left: auto;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--surface-container);
+  }
+  .autocomplete-item.active .ac-kind { background: var(--primary-container); color: var(--on-primary-container); }
+
+  /* 收藏按钮 */
+  .fav-btn {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    z-index: 10;
+  }
+
+  /* ========== 屏幕2: 设置 ========== */
+  .screen2-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+  .screen2-body {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    height: calc(100% - 68px);
+  }
+  .settings-list {
+    width: 380px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    gap: 3px;
+    border-radius: 28px;
+    background: var(--surface-container-low);
+    overflow-y: auto;
+  }
+  .settings-item {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .settings-item:first-child { border-radius: 28px 28px 8px 8px; }
+  .settings-item:last-child { border-radius: 8px 8px 28px 28px; }
+  .settings-item:only-child { border-radius: 28px; }
+  .settings-item:hover { background: var(--surface-container); }
+  .settings-item.active { background: var(--secondary-container); }
+  .settings-item .icon-circle {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--primary-container);
+    color: var(--on-primary-container);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .settings-item .text { flex: 1; }
+  .settings-item .title { font-size: 16px; font-weight: 400; color: var(--on-surface); }
+  .settings-item .subtitle { font-size: 14px; color: var(--on-surface-variant); }
+  .settings-item .chevron { color: var(--on-surface-variant); }
+
+  .settings-detail {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .settings-detail h2 { font-size: 22px; margin-bottom: 8px; }
+  .settings-detail .desc { color: var(--on-surface-variant); margin-bottom: 24px; }
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-row .label { font-size: 16px; }
+  .setting-row .hint { font-size: 13px; color: var(--on-surface-variant); margin-top: 4px; }
+
+  /* 开关 */
+  .switch {
+    width: 52px; height: 32px;
+    border-radius: 16px;
+    background: var(--outline-variant);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .switch.on { background: var(--primary); }
+  .switch .thumb {
+    position: absolute;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--on-surface-variant);
+    top: 4px; left: 4px;
+    transition: all 0.2s;
+  }
+  .switch.on .thumb {
+    left: 24px;
+    background: var(--on-primary);
+  }
+
+  /* ========== 屏幕3: 运行 ========== */
+  .screen3-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    height: 100%;
+  }
+  .run-display {
+    height: calc(100% - 200px);
+    position: relative;
+  }
+  .run-toolbar {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 5;
+  }
+  .run-content {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: var(--surface-container-lowest, var(--surface));
+  }
+  .run-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--on-surface-variant);
+    gap: 12px;
+  }
+  .run-output {
+    height: 176px;
+    display: flex;
+    flex-direction: column;
+  }
+  .run-output-header {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--outline-variant);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .run-output-body {
+    flex: 1;
+    padding: 12px 16px;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    color: var(--on-surface);
+  }
+  .run-output-body .error { color: var(--error); }
+  .run-output-body .success { color: #2E7D32; }
+
+  /* ========== 屏幕4: 日志 ========== */
+  .screen4-body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 12px;
+  }
+  .screen4-middle {
+    display: flex;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+  }
+  .log-list-container {
+    width: 868px;
+    max-width: 65%;
+    display: flex;
+    flex-direction: column;
+  }
+  .log-filter {
+    padding: 8px 16px;
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--outline-variant);
+  }
+  .filter-chip {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    border: 1px solid var(--outline-variant);
+    background: transparent;
+    color: var(--on-surface-variant);
+  }
+  .filter-chip.active {
+    background: var(--secondary-container);
+    color: var(--on-secondary-container);
+    border-color: transparent;
+  }
+  .log-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+  }
+  .log-item {
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    background: var(--surface-container-low);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .log-item:hover { background: var(--surface-container); }
+  .log-item .log-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .log-level {
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .log-level.info { background: var(--primary-container); color: var(--on-primary-container); }
+  .log-level.success { background: #C8E6C9; color: #1B5E20; }
+  .log-level.error { background: var(--error-container); color: var(--on-error-container); }
+  .log-time { font-size: 12px; color: var(--on-surface-variant); }
+  .log-msg { color: var(--on-surface); word-break: break-word; }
+
+  .time-picker-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .tp-display {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .tp-block {
+    width: 96px;
+    height: 80px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 400;
+    cursor: pointer;
+    font-family: 'Roboto Mono', monospace;
+  }
+  .tp-block.selected { background: var(--primary-container); color: var(--on-primary-container); }
+  .tp-block:not(.selected) { background: var(--surface-container-highest); color: var(--on-surface); }
+  .tp-colon { font-size: 48px; color: var(--on-surface-variant); align-self: center; }
+  .tp-ampm {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-left: 8px;
+  }
+  .tp-ampm button {
+    padding: 8px 12px;
+    border: none;
+    background: var(--surface-container-highest);
+    color: var(--on-surface-variant);
+    cursor: pointer;
+    font-size: 14px;
+  }
+  .tp-ampm button.active { background: var(--primary-container); color: var(--on-primary-container); }
+  .tp-input {
+    width: 80px;
+    height: 56px;
+    text-align: center;
+    font-size: 32px;
+    border: 1px solid var(--outline);
+    border-radius: 8px;
+    font-family: 'Roboto Mono', monospace;
+    background: var(--surface);
+  }
+  .tp-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .screen4-bottom {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* 日期选择器模态 */
+  .date-picker-modal {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 328px;
+    background: var(--surface-container-high);
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    z-index: 100;
+  }
+  .dp-title { font-size: 12px; color: var(--on-surface-variant); margin-bottom: 4px; }
+  .dp-date { font-size: 24px; margin-bottom: 16px; }
+  .dp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .dp-month { font-size: 14px; font-weight: 500; }
+  .dp-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 12px;
+    color: var(--on-surface-variant);
+    margin-bottom: 8px;
+  }
+  .dp-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+  .dp-day {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--on-surface);
+  }
+  .dp-day:hover { background: var(--surface-container); }
+  .dp-day.other { color: var(--on-surface-variant); opacity: 0.5; }
+  .dp-day.selected { background: var(--primary); color: var(--on-primary); }
+  .dp-day.today:not(.selected) { border: 1px solid var(--primary); color: var(--primary); }
+  .dp-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  /* ========== 对话框/菜单 ========== */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .overlay.show { opacity: 1; pointer-events: auto; }
+  .dialog {
+    background: var(--surface-container-high);
+    border-radius: 28px;
+    padding: 24px;
+    min-width: 320px;
+    max-width: 480px;
+    transform: scale(0.9);
+    transition: transform 0.2s;
+  }
+  .overlay.show .dialog { transform: scale(1); }
+  .dialog h3 { font-size: 22px; margin-bottom: 16px; }
+  .dialog p { color: var(--on-surface-variant); margin-bottom: 16px; line-height: 1.5; }
+  .dialog input, .dialog select, .dialog textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--outline);
+    border-radius: 8px;
+    font-size: 16px;
+    background: var(--surface);
+    color: var(--on-surface);
+    font-family: inherit;
+    margin-bottom: 12px;
+  }
+  .dialog input:focus, .dialog select:focus, .dialog textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    border-width: 2px;
+  }
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  /* 菜单 */
+  .menu {
+    position: absolute;
+    background: var(--surface-container);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 500;
+    min-width: 180px;
+  }
+  .menu-item {
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--on-surface);
+  }
+  .menu-item:hover { background: var(--surface-container-high); }
+  .menu-item .material-symbols-rounded { font-size: 20px; }
+
+  /* ========== Screen 5: AI 对话 ========== */
+  .screen5-top {
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .screen5-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--on-surface);
+    letter-spacing: -0.5px;
+  }
+  .screen5-body {
+    display: flex;
+    gap: 16px;
+    height: calc(100% - 60px);
+    padding: 0 16px 16px 16px;
+  }
+  .screen5-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--surface-container-high);
+    border-radius: 28px;
+    padding: 12px;
+    overflow: hidden;
+  }
+  .screen5-sidebar-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface-container-highest);
+    border-radius: 16px;
+    padding: 0 12px;
+    height: 40px;
+  }
+  .screen5-sidebar-search .search-icon {
+    font-size: 20px;
+    color: var(--on-surface-variant);
+    flex-shrink: 0;
+  }
+  .ai-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: var(--on-surface);
+    font-family: 'Roboto', sans-serif;
+  }
+  .ai-new-chat-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .ai-conversation-list {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .ai-conv-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.15s;
+  }
+  .ai-conv-item:hover { background: var(--surface-container); }
+  .ai-conv-item.active { background: var(--secondary-container); color: var(--on-secondary-container); }
+  .ai-conv-item .material-symbols-rounded { font-size: 20px; flex-shrink: 0; }
+  .ai-conv-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+  .ai-conv-del {
+    opacity: 0;
+    font-size: 18px !important;
+    color: var(--on-surface-variant);
+    flex-shrink: 0;
+  }
+  .ai-conv-item:hover .ai-conv-del { opacity: 1; }
+
+  .screen5-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-container-high);
+    border-radius: 28px;
+    overflow: hidden;
+  }
+  .ai-chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ai-empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--on-surface-variant);
+    font-size: 16px;
+  }
+  .ai-msg {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-break: break-word;
+    white-space: pre-wrap;
+  }
+  .ai-msg-user {
+    align-self: flex-end;
+    background: var(--primary);
+    color: var(--on-primary);
+    border-bottom-right-radius: 4px;
+  }
+  .ai-msg-bot {
+    align-self: flex-start;
+    background: var(--surface-container-low);
+    color: var(--on-surface);
+    border-bottom-left-radius: 4px;
+  }
+  .ai-msg-sys {
+    align-self: center;
+    background: var(--error-container);
+    color: var(--on-error-container);
+    font-size: 13px;
+    border-radius: 12px;
+  }
+  .ai-input-area {
+    padding: 12px 16px;
+    border-top: 1px solid var(--outline-variant);
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    position: relative;
+  }
+  .ai-model-selector {
+    flex-shrink: 0;
+  }
+  .ai-model-select {
+    height: 40px;
+    border: 1px solid var(--outline);
+    border-radius: 20px;
+    padding: 0 16px;
+    background: var(--surface-container-low);
+    color: var(--on-surface);
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    outline: none;
+  }
+  .ai-input-wrapper {
+    flex: 1;
+  }
+  .ai-input {
+    width: 100%;
+    min-height: 40px;
+    max-height: 120px;
+    border: 1px solid var(--outline);
+    border-radius: 20px;
+    padding: 10px 16px;
+    background: var(--surface-container-low);
+    color: var(--on-surface);
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+  }
+  .ai-input:focus {
+    border-color: var(--primary);
+    border-width: 2px;
+  }
+  .ai-split-btn {
+    display: flex;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .ai-send-btn {
+    border-radius: 20px 0 0 20px;
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+  .ai-send-arrow {
+    border-radius: 0 20px 20px 0;
+    height: 40px;
+    padding: 0 4px;
+    min-width: 32px;
+  }
+  .ai-send-arrow .material-symbols-rounded {
+    font-size: 24px;
+    transition: transform 0.2s;
+  }
+  .ai-send-arrow.open .material-symbols-rounded {
+    transform: rotate(180deg);
+  }
+  .ai-menu {
+    position: absolute;
+    bottom: 56px;
+    right: 16px;
+    background: var(--surface-container);
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 500;
+    min-width: 160px;
+  }
+  .ai-menu-item {
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--on-surface);
+  }
+  .ai-menu-item:hover { background: var(--surface-container-high); }
+  .ai-menu-item .material-symbols-rounded { font-size: 20px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--inverse-surface);
+    color: var(--inverse-on-surface);
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 2000;
+    transition: transform 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* 滚动条 */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--outline-variant); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--outline); }
+
+  .flex { display: flex; }
+  .flex-col { display: flex; flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .flex-1 { flex: 1; }
+  .mt-12 { margin-top: 12px; }
+</style>
+</head>
+<body>
+
+
+
+<!-- ========== 屏幕 1: 主编辑器 ========== -->
+<div class="screen active" id="screen1">
+  <div class="screen1-top">
+    <div class="logo-placeholder">
+      <span class="material-symbols-rounded">terminal</span>
+      <span>Codexa</span>
+    </div>
+    <div class="top-btn-group">
+      <div class="btn-group">
+        <button class="btn btn-filled" onclick="showNewMenu(event)">
+          <span class="material-symbols-rounded">add</span>新建
+        </button>
+        <button class="btn btn-filled" onclick="saveAll()">
+          <span class="material-symbols-rounded">save</span>保存
+        </button>
+        <button class="btn btn-filled" onclick="saveAs()">
+          <span class="material-symbols-rounded">save_as</span>另存为
+        </button>
+        <button class="btn btn-filled" onclick="undoEdit()">
+          <span class="material-symbols-rounded">undo</span>撤销
+        </button>
+        <button class="btn btn-filled" onclick="goScreen(2,'zoom-in')">
+          <span class="material-symbols-rounded">settings</span>设置
+        </button>
+        <button class="btn btn-filled" onclick="runCode()">
+          <span class="material-symbols-rounded">play_arrow</span>运行
+        </button>
+        <button class="btn btn-filled" onclick="goScreen(4,'slide-right')">
+          <span class="material-symbols-rounded">receipt_long</span>日志
+        </button>
+        <button class="btn btn-filled" onclick="goScreen(5,'slide-right')">
+          <span class="material-symbols-rounded">smart_toy</span>AI
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="screen1-middle">
+    <div class="container-box file-tree-container">
+      <div class="file-tree-header">
+        <span>文件目录</span>
+        <button class="icon-btn icon-btn-xs" onclick="refreshFiles()" title="刷新">
+          <span class="material-symbols-rounded" style="font-size:18px;">refresh</span>
+        </button>
+      </div>
+      <div class="file-tree" id="fileTree"></div>
+    </div>
+
+    <div class="container-box editor-container" id="editorContainer">
+      <div class="fav-btn">
+        <button class="icon-btn icon-btn-xs icon-btn-tonal" onclick="toggleFavorite()" title="收藏">
+          <span class="material-symbols-rounded" id="favIcon">favorite</span>
+        </button>
+      </div>
+      <div class="editor-header">
+        <div class="editor-tabs" id="editorTabs"></div>
+      </div>
+      <div class="editor-body" id="editorBody">
+        <div class="editor-placeholder">
+          <span class="material-symbols-rounded">description</span>
+          <span>选择或新建一个文件开始编辑</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 屏幕 2: 设置 ========== -->
+<div class="screen" id="screen2">
+  <div class="screen2-header">
+    <button class="btn btn-filled" onclick="goScreen(1,'slide-left')">
+      <span class="material-symbols-rounded">add</span>返回
+    </button>
+  </div>
+  <div class="screen2-body">
+    <div class="settings-list" id="settingsList"></div>
+    <div class="container-box settings-detail" id="settingsDetail"></div>
+  </div>
+</div>
+
+<!-- ========== 屏幕 3: 运行 ========== -->
+<div class="screen" id="screen3">
+  <div class="screen3-body">
+    <div class="container-box run-display" id="runDisplay">
+      <div class="run-toolbar">
+        <div class="btn-group">
+          <button class="btn btn-filled" onclick="goScreen(1,'slide-left')">
+            <span class="material-symbols-rounded">arrow_back</span>返回
+          </button>
+          <button class="btn btn-filled" onclick="runCode(true)">
+            <span class="material-symbols-rounded">refresh</span>重新运行
+          </button>
+          <button class="btn btn-filled" onclick="runCode(false)">
+            <span class="material-symbols-rounded">play_arrow</span>运行
+          </button>
+          <button class="btn btn-filled" onclick="stopRun()">
+            <span class="material-symbols-rounded">stop</span>停止
+          </button>
+          <button class="btn btn-filled" onclick="toggleRunFullscreen()">
+            <span class="material-symbols-rounded">fullscreen</span>全屏
+          </button>
+        </div>
+      </div>
+      <div class="run-placeholder" id="runPlaceholder">
+        <span class="material-symbols-rounded" style="font-size:64px;opacity:0.4;">play_circle</span>
+        <span>点击运行按钮执行代码</span>
+      </div>
+      <iframe class="run-content" id="runFrame" style="display:none;"></iframe>
+    </div>
+    <div class="container-box run-output">
+      <div class="run-output-header">
+        <span style="font-weight:500;">程序输出</span>
+        <button class="icon-btn icon-btn-xs" onclick="clearOutput()">
+          <span class="material-symbols-rounded" style="font-size:18px;">delete</span>
+        </button>
+      </div>
+      <div class="run-output-body" id="runOutput">等待运行...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 屏幕 4: 日志 ========== -->
+<div class="screen" id="screen4">
+  <div class="screen4-body">
+    <div class="screen4-middle">
+      <div class="container-box log-list-container">
+        <div class="log-filter">
+          <button class="filter-chip active" data-level="" onclick="filterLogs(this,'')">全部</button>
+          <button class="filter-chip" data-level="info" onclick="filterLogs(this,'info')">信息</button>
+          <button class="filter-chip" data-level="success" onclick="filterLogs(this,'success')">成功</button>
+          <button class="filter-chip" data-level="error" onclick="filterLogs(this,'error')">错误</button>
+          <div style="flex:1;"></div>
+          <button class="icon-btn icon-btn-xs" onclick="clearLogs()" title="清空日志">
+            <span class="material-symbols-rounded" style="font-size:18px;">delete_sweep</span>
+          </button>
+        </div>
+        <div class="log-list" id="logList"></div>
+      </div>
+
+      <div class="container-box time-picker-container">
+        <div style="font-size:14px;color:var(--on-surface-variant);margin-bottom:12px;">选择时间筛选</div>
+        <div class="tp-display">
+          <div class="tp-block selected" id="tpHour" onclick="selectTpBlock('hour')">
+            <span id="tpHourVal">12</span>
+          </div>
+          <div class="tp-colon">:</div>
+          <div class="tp-block" id="tpMinute" onclick="selectTpBlock('minute')">
+            <span id="tpMinuteVal">00</span>
+          </div>
+          <div class="tp-ampm">
+            <button id="tpAM" class="active" onclick="setAMPM('AM')">AM</button>
+            <button id="tpPM" onclick="setAMPM('PM')">PM</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input class="tp-input" id="tpInput" type="text" maxlength="2" value="12" oninput="onTpInput()">
+          <button class="icon-btn" onclick="toggleTpMode()" title="切换表盘/键盘">
+            <span class="material-symbols-rounded">keyboard</span>
+          </button>
+        </div>
+        <div class="tp-actions">
+          <button class="btn btn-outline" onclick="cancelTime()">取消</button>
+          <button class="btn btn-filled" onclick="confirmTime()">确定</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 日期选择器 -->
+    <div class="date-picker-modal" id="datePicker">
+      <div class="dp-title">选择日期</div>
+      <div class="dp-date" id="dpDate">2026年9月25日</div>
+      <div class="dp-header">
+        <span class="dp-month" id="dpMonth">2026年9月</span>
+        <div style="display:flex;gap:4px;">
+          <button class="icon-btn icon-btn-xs" onclick="dpPrevMonth()">
+            <span class="material-symbols-rounded" style="font-size:18px;">chevron_left</span>
+          </button>
+          <button class="icon-btn icon-btn-xs" onclick="dpNextMonth()">
+            <span class="material-symbols-rounded" style="font-size:18px;">chevron_right</span>
+          </button>
+        </div>
+      </div>
+      <div class="dp-weekdays">
+        <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+      </div>
+      <div class="dp-grid" id="dpGrid"></div>
+      <div class="dp-actions">
+        <button class="btn btn-outline" onclick="closeDatePicker()">取消</button>
+        <button class="btn btn-filled" onclick="confirmDate()">确定</button>
+      </div>
+    </div>
+
+    <div class="screen4-bottom">
+      <div class="btn-group">
+        <button class="btn btn-filled" onclick="goScreen(1,'slide-left')">
+          <span class="material-symbols-rounded">arrow_back</span>返回
+        </button>
+        <button class="btn btn-filled" onclick="searchLogs()">
+          <span class="material-symbols-rounded">search</span>搜索
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 屏幕 5: AI 对话 ========== -->
+<div class="screen" id="screen5">
+  <div class="screen5-top">
+    <div class="btn-group">
+      <button class="btn btn-filled" onclick="goScreen(1,'slide-left')">
+        <span class="material-symbols-rounded">arrow_back</span>返回
+      </button>
+    </div>
+    <span class="screen5-title">&lt;/&gt;&nbsp;&nbsp;Codexa AI</span>
+  </div>
+  <div class="screen5-body">
+    <div class="screen5-sidebar" id="aiSidebar">
+      <div class="screen5-sidebar-search">
+        <span class="material-symbols-rounded search-icon">search</span>
+        <input type="text" id="aiSearchInput" placeholder="搜索对话" class="ai-search-input">
+      </div>
+      <button class="btn btn-filled ai-new-chat-btn" onclick="newAIChat()">
+        <span class="material-symbols-rounded">add</span>新对话
+      </button>
+      <div class="ai-conversation-list" id="aiConversationList"></div>
+    </div>
+    <div class="screen5-main">
+      <div class="ai-chat-area" id="aiChatArea">
+        <div class="ai-empty-state" id="aiEmptyState">
+          <span class="material-symbols-rounded" style="font-size:64px;opacity:0.3;">smart_toy</span>
+          <span style="margin-top:12px;">开始与 AI 对话</span>
+        </div>
+      </div>
+      <div class="ai-input-area">
+        <div class="ai-model-selector">
+          <select id="aiModelSelect" class="ai-model-select">
+            <option value="deepseek-r1:8b">R1 8B 精确</option>
+            <option value="deepseek-r1:1.5b">R1 1.5B 快速</option>
+          </select>
+        </div>
+        <div class="ai-input-wrapper">
+          <textarea id="aiInput" class="ai-input" placeholder="输入消息..." rows="1"></textarea>
+        </div>
+        <div class="ai-split-btn">
+          <button class="btn btn-filled ai-send-btn" onclick="sendAIMessage()">
+            <span class="material-symbols-rounded">send</span>发送
+          </button>
+          <button class="btn btn-filled ai-send-arrow" onclick="toggleAIMenu(event)">
+            <span class="material-symbols-rounded" id="aiMenuArrow">arrow_drop_down</span>
+          </button>
+        </div>
+        <div class="ai-menu" id="aiMenu" style="display:none;">
+          <div class="ai-menu-item" onclick="aiScheduleSend()">
+            <span class="material-symbols-rounded">schedule_send</span>定时发送
+          </div>
+          <div class="ai-menu-item" onclick="aiSaveDraft()">
+            <span class="material-symbols-rounded">save</span>保存草稿
+          </div>
+          <div class="ai-menu-item" onclick="aiShare()">
+            <span class="material-symbols-rounded">share</span>分享
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="overlay">
+  <div class="dialog" id="dialog">
+    <h3 id="dialogTitle">标题</h3>
+    <p id="dialogDesc" style="display:none;"></p>
+    <div id="dialogBody"></div>
+    <div class="dialog-actions" id="dialogActions">
+      <button class="btn btn-outline" onclick="closeDialog()">取消</button>
+      <button class="btn btn-filled" id="dialogConfirm" onclick="confirmDialog()">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== 状态管理 ==========
+const state = {
+  currentScreen: 1,
+  openFiles: [],      // {path, content, saved}
+  activeTab: null,
+  favorites: JSON.parse(localStorage.getItem('codexa_favs') || '[]'),
+  settings: JSON.parse(localStorage.getItem('codexa_settings') || JSON.stringify({
+    autoSave: false, font: 14, tabSize: 4, wordWrap: false, runTimeout: 30,
+    theme: 'light', showLineNums: true, confirmDelete: true, autoRun: false,
+    autoIndent: true, highlightLine: true, minimap: false, bracketMatch: true,
+    pythonPath: '', nodePath: '', defaultLang: 'python', encoding: 'UTF-8',
+    maxRecentFiles: 10, autoBackup: false, indentGuide: true, fontSize: 14,
+    lineHeight: 1.6, cursorBlink: true, selectTheme: 'purple', windowOnTop: false,
+    checkUpdateOnStart: false, telemetry: false, maxLogCount: 1000
+  })),
+  currentLogFilter: '',
+  currentLogDate: '',
+  tpMode: 'hour',
+  tpHour: 12, tpMinute: 0, tpAMPM: 'AM',
+  dpYear: new Date().getFullYear(),
+  dpMonth: new Date().getMonth(),
+  dpSelected: new Date().toISOString().slice(0,10),
+  dpToday: new Date().toISOString().slice(0,10),
+};
+
+// ========== 屏幕切换 ==========
+function goScreen(n, anim) {
+  const from = document.getElementById('screen' + state.currentScreen);
+  const to = document.getElementById('screen' + n);
+  if (from === to) return;
+
+  from.classList.remove('active', 'zoom-in', 'slide-up', 'slide-right', 'slide-left');
+  from.style.animation = 'fadeOut 0.25s ease forwards';
+
+  setTimeout(() => {
+    from.style.animation = '';
+    from.style.opacity = '0';
+    to.classList.add('active');
+    to.classList.remove('zoom-in','slide-up','slide-right','slide-left');
+    to.style.opacity = '';
+    void to.offsetWidth;
+    to.classList.add(anim);
+    state.currentScreen = n;
+
+    if (n === 3) { /* run screen handled by runCode */ }
+    if (n === 4) loadLogs();
+    if (n === 2) renderSettings();
+  }, 200);
+}
+
+// ========== Toast ==========
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ========== 对话框 ==========
+function showDialog(title, bodyHtml, onConfirm, opts={}) {
+  document.getElementById('dialogTitle').textContent = title;
+  const desc = document.getElementById('dialogDesc');
+  if (opts.desc) { desc.textContent = opts.desc; desc.style.display='block'; }
+  else desc.style.display='none';
+  document.getElementById('dialogBody').innerHTML = bodyHtml;
+  const confirmBtn = document.getElementById('dialogConfirm');
+  confirmBtn.textContent = opts.confirmText || '确定';
+  window._dialogConfirm = onConfirm;
+  document.getElementById('overlay').classList.add('show');
+}
+function closeDialog() {
+  document.getElementById('overlay').classList.remove('show');
+}
+function confirmDialog() {
+  if (window._dialogConfirm) window._dialogConfirm();
+  closeDialog();
+}
+
+// ========== 文件树 ==========
+async function refreshFiles() {
+  try {
+    const res = await fetch('/api/files');
+    const data = await res.json();
+    renderTree(data.tree);
+  } catch(e) { showToast('加载文件失败'); }
+}
+
+function renderTree(node, container, depth=0) {
+  if (!container) {
+    container = document.getElementById('fileTree');
+    container.innerHTML = '';
+    if (!node.children || node.children.length === 0) {
+      container.innerHTML = '<div class="empty">工作区为空<br>点击"新建"创建文件</div>';
+      return;
+    }
+    const wrap = document.createElement('div');
+    for (const child of (node.children || [])) {
+      renderTreeNode(child, wrap, 0);
+    }
+    container.appendChild(wrap);
+    return;
+  }
+}
+
+function renderTreeNode(node, container, depth) {
+  const row = document.createElement('div');
+  row.className = 'tree-row';
+  row.draggable = true;
+  row.dataset.path = node.path;
+  row.dataset.type = node.type;
+  row.style.paddingLeft = (8 + depth * 20) + 'px';
+
+  const icon = node.type === 'folder' ? 'folder' : 'description';
+  const iconClass = node.type === 'folder' ? 'folder-icon' : 'file-icon';
+  row.innerHTML = `
+    <span class="material-symbols-rounded tree-icon ${iconClass}">${icon}</span>
+    <span class="tree-label">${node.name}</span>
+  `;
+
+  row.onclick = (e) => {
+    document.querySelectorAll('.file-tree .tree-row').forEach(x=>x.classList.remove('selected'));
+    row.classList.add('selected');
+  };
+  row.ondblclick = () => {
+    if (node.type === 'file') openFile(node.path);
+  };
+  row.oncontextmenu = (e) => {
+    e.preventDefault();
+    showContextMenu(e.clientX, e.clientY, node);
+  };
+
+  row.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', node.path);
+    e.dataTransfer.effectAllowed = 'move';
+    row.classList.add('dragging');
+  });
+  row.addEventListener('dragend', () => {
+    row.classList.remove('dragging');
+    document.querySelectorAll('.tree-row').forEach(x => x.classList.remove('drag-over'));
+  });
+
+  if (node.type === 'folder') {
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      row.classList.add('drag-over');
+    });
+    row.addEventListener('dragleave', () => {
+      row.classList.remove('drag-over');
+    });
+    row.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      row.classList.remove('drag-over');
+      const sourcePath = e.dataTransfer.getData('text/plain');
+      if (sourcePath && sourcePath !== node.path) {
+        await moveFile(sourcePath, node.path);
+      }
+    });
+  }
+
+  container.appendChild(row);
+
+  if (node.type === 'folder' && node.children && node.children.length > 0) {
+    const childWrap = document.createElement('div');
+    childWrap.className = 'tree-children';
+    for (const child of node.children) {
+      renderTreeNode(child, childWrap, depth + 1);
+    }
+    container.appendChild(childWrap);
+  }
+}
+
+async function moveFile(source, targetDir) {
+  try {
+    const res = await fetch('/api/file/move', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({source: source, targetDir: targetDir})
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(`已移动到 ${targetDir}`);
+      refreshFiles();
+    } else {
+      showToast(data.error || '移动失败');
+    }
+  } catch(e) {
+    showToast('移动失败');
+  }
+}
+
+function showContextMenu(x, y, node) {
+  document.querySelectorAll('.menu').forEach(m=>m.remove());
+  const menu = document.createElement('div');
+  menu.className = 'menu';
+  menu.style.left = x + 'px';
+  menu.style.top = y + 'px';
+  const items = [];
+  if (node.type === 'file') {
+    items.push({icon:'edit', label:'打开', fn:()=>openFile(node.path)});
+    items.push({icon:'save_as', label:'重命名', fn:()=>renameFile(node)});
+    items.push({icon:'delete', label:'删除', fn:()=>deleteFile(node)});
+  } else {
+    items.push({icon:'note_add', label:'新建文件', fn:()=>newFileInFolder(node.path)});
+    items.push({icon:'create_new_folder', label:'新建文件夹', fn:()=>newFolderInFolder(node.path)});
+    items.push({icon:'delete', label:'删除', fn:()=>deleteFile(node)});
+  }
+  items.forEach(it => {
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    div.innerHTML = `<span class="material-symbols-rounded">${it.icon}</span><span>${it.label}</span>`;
+    div.onclick = () => { menu.remove(); it.fn(); };
+    menu.appendChild(div);
+  });
+  document.body.appendChild(menu);
+  setTimeout(()=>document.addEventListener('click', ()=>menu.remove(), {once:true}), 0);
+}
+
+// ========== 文件操作 ==========
+async function openFile(path) {
+  // 已打开则切换
+  const existing = state.openFiles.find(f => f.path === path);
+  if (existing) {
+    state.activeTab = path;
+    acFileCache.path = '';
+    renderEditor();
+    renderTabs();
+    return;
+  }
+  try {
+    const res = await fetch('/api/file?path=' + encodeURIComponent(path));
+    const data = await res.json();
+    if (data.error) { showToast(data.error); return; }
+    state.openFiles.push({ path, content: data.content, saved: true, history: [], historyIdx: -1 });
+    state.activeTab = path;
+    renderEditor();
+    renderTabs();
+  } catch(e) { showToast('打开文件失败'); }
+}
+
+function renderTabs() {
+  const tabs = document.getElementById('editorTabs');
+  tabs.innerHTML = '';
+  state.openFiles.forEach(f => {
+    const name = f.path.split('/').pop();
+    const tab = document.createElement('div');
+    tab.className = 'tab' + (f.path === state.activeTab ? ' active' : '');
+    tab.innerHTML = `<span>${name}</span>${!f.saved ? ' •' : ''}<span class="close-tab" onclick="event.stopPropagation();closeTab('${f.path}')">×</span>`;
+    tab.onclick = () => { state.activeTab = f.path; renderEditor(); renderTabs(); };
+    tabs.appendChild(tab);
+  });
+}
+
+function closeTab(path) {
+  const idx = state.openFiles.findIndex(f => f.path === path);
+  if (idx >= 0) {
+    state.openFiles.splice(idx, 1);
+    if (state.activeTab === path) {
+      state.activeTab = state.openFiles.length > 0 ? state.openFiles[state.openFiles.length-1].path : null;
+    }
+    renderEditor();
+    renderTabs();
+  }
+}
+
+function renderEditor() {
+  const body = document.getElementById('editorBody');
+  if (!state.activeTab) {
+    body.innerHTML = `<div class="editor-placeholder">
+      <span class="material-symbols-rounded">description</span>
+      <span>选择或新建一个文件开始编辑</span>
+    </div>`;
+    return;
+  }
+  const f = state.openFiles.find(x => x.path === state.activeTab);
+  if (!f) return;
+  body.innerHTML = `
+    <div class="line-numbers" id="lineNums">1</div>
+    <textarea class="code-area" id="codeArea" spellcheck="false"></textarea>
+  `;
+  const ta = document.getElementById('codeArea');
+  ta.value = f.content;
+  updateLineNums();
+  ta.addEventListener('input', () => {
+    f.content = ta.value;
+    f.saved = false;
+    updateLineNums();
+    // 撤销历史
+    if (f.historyIdx < f.history.length - 1) f.history = f.history.slice(0, f.historyIdx+1);
+    f.history.push(ta.value);
+    f.historyIdx = f.history.length - 1;
+    if (f.history.length > 100) { f.history.shift(); f.historyIdx--; }
+    renderTabs();
+  });
+  ta.addEventListener('scroll', () => {
+    document.getElementById('lineNums').scrollTop = ta.scrollTop;
+    hideAutocomplete();
+  });
+  ta.addEventListener('input', () => {
+    f.content = ta.value;
+    f.saved = false;
+    updateLineNums();
+    // 撤销历史
+    if (f.historyIdx < f.history.length - 1) f.history = f.history.slice(0, f.historyIdx+1);
+    f.history.push(ta.value);
+    f.historyIdx = f.history.length - 1;
+    if (f.history.length > 100) { f.history.shift(); f.historyIdx--; }
+    renderTabs();
+    // 自动补全
+    handleAutocomplete(ta, f);
+  });
+  ta.addEventListener('keydown', (e) => {
+    // 补全下拉导航
+    if (acState.list.length > 0 && acState.show) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        acState.selected = (acState.selected + 1) % acState.list.length;
+        renderAutocompleteList();
+        return;
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        acState.selected = (acState.selected - 1 + acState.list.length) % acState.list.length;
+        renderAutocompleteList();
+        return;
+      }
+      if (e.key === 'Escape') {
+        hideAutocomplete();
+        return;
+      }
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        acceptAutocomplete(ta, f);
+        return;
+      }
+    }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = ta.selectionStart, end = ta.selectionEnd;
+      if (start === end) {
+        ta.value = ta.value.substring(0,start) + '    ' + ta.value.substring(end);
+        ta.selectionStart = ta.selectionEnd = start + 4;
+      } else {
+        const before = ta.value.substring(0, start);
+        const sel = ta.value.substring(start, end);
+        const after = ta.value.substring(end);
+        const lineStart = before.lastIndexOf('\n') + 1;
+        const lines = sel.split('\n');
+        if (e.shiftKey) {
+          for (let i = 0; i < lines.length; i++) {
+            lines[i] = lines[i].replace(/^ {1,4}/, '');
+          }
+        } else {
+          for (let i = 0; i < lines.length; i++) {
+            lines[i] = '    ' + lines[i];
+          }
+        }
+        const newSel = lines.join('\n');
+        ta.value = before.substring(0, lineStart) + newSel + after;
+        ta.selectionStart = lineStart;
+        ta.selectionEnd = lineStart + newSel.length;
+      }
+      ta.dispatchEvent(new Event('input'));
+    }
+    if (e.ctrlKey && e.key === 's') { e.preventDefault(); saveActive(); }
+    if (e.ctrlKey && e.key === 'z') { e.preventDefault(); undoEdit(); }
+  });
+  ta.addEventListener('blur', () => {
+    setTimeout(() => hideAutocomplete(), 150);
+  });
+  ta.focus();
+}
+
+function updateLineNums() {
+  const ta = document.getElementById('codeArea');
+  const ln = document.getElementById('lineNums');
+  if (!ta || !ln) return;
+  const lines = ta.value.split('\n').length;
+  ln.innerHTML = Array.from({length:lines}, (_,i)=>'<div>'+(i+1)+'</div>').join('');
+}
+
+// ========== 自动补全 ==========
+const AC_KEYWORDS = {
+  '.py': [
+    {w:'def', k:'关键字'},{w:'class', k:'关键字'},{w:'import', k:'关键字'},{w:'from', k:'关键字'},
+    {w:'return', k:'关键字'},{w:'if', k:'关键字'},{w:'elif', k:'关键字'},{w:'else', k:'关键字'},
+    {w:'for', k:'关键字'},{w:'while', k:'关键字'},{w:'try', k:'关键字'},{w:'except', k:'关键字'},
+    {w:'finally', k:'关键字'},{w:'with', k:'关键字'},{w:'as', k:'关键字'},{w:'pass', k:'关键字'},
+    {w:'break', k:'关键字'},{w:'continue', k:'关键字'},{w:'raise', k:'关键字'},{w:'yield', k:'关键字'},
+    {w:'lambda', k:'关键字'},{w:'global', k:'关键字'},{w:'nonlocal', k:'关键字'},{w:'del', k:'关键字'},
+    {w:'assert', k:'关键字'},{w:'in', k:'关键字'},{w:'is', k:'关键字'},{w:'not', k:'关键字'},
+    {w:'and', k:'关键字'},{w:'or', k:'关键字'},{w:'None', k:'常量'},{w:'True', k:'常量'},
+    {w:'False', k:'常量'},{w:'self', k:'变量'},{w:'print', k:'函数'},{w:'len', k:'函数'},
+    {w:'range', k:'函数'},{w:'input', k:'函数'},{w:'open', k:'函数'},{w:'type', k:'函数'},
+    {w:'isinstance', k:'函数'},{w:'enumerate', k:'函数'},{w:'zip', k:'函数'},{w:'map', k:'函数'},
+    {w:'filter', k:'函数'},{w:'sorted', k:'函数'},{w:'reversed', k:'函数'},{w:'sum', k:'函数'},
+    {w:'min', k:'函数'},{w:'max', k:'函数'},{w:'abs', k:'函数'},{w:'round', k:'函数'},
+    {w:'str', k:'函数'},{w:'int', k:'函数'},{w:'float', k:'函数'},{w:'list', k:'函数'},
+    {w:'dict', k:'函数'},{w:'set', k:'函数'},{w:'tuple', k:'函数'},{w:'bool', k:'函数'},
+    {w:'super', k:'函数'},{w:'getattr', k:'函数'},{w:'setattr', k:'函数'},{w:'hasattr', k:'函数'},
+    {w:'__init__', k:'方法'},{w:'__str__', k:'方法'},{w:'__repr__', k:'方法'},{w:'__len__', k:'方法'},
+    {w:'__getitem__', k:'方法'},{w:'__setitem__', k:'方法'},{w:'__iter__', k:'方法'},{w:'__next__', k:'方法'},
+  ],
+  '.js': [
+    {w:'function', k:'关键字'},{w:'const', k:'关键字'},{w:'let', k:'关键字'},{w:'var', k:'关键字'},
+    {w:'return', k:'关键字'},{w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'for', k:'关键字'},
+    {w:'while', k:'关键字'},{w:'do', k:'关键字'},{w:'switch', k:'关键字'},{w:'case', k:'关键字'},
+    {w:'break', k:'关键字'},{w:'continue', k:'关键字'},{w:'default', k:'关键字'},{w:'try', k:'关键字'},
+    {w:'catch', k:'关键字'},{w:'finally', k:'关键字'},{w:'throw', k:'关键字'},{w:'new', k:'关键字'},
+    {w:'typeof', k:'关键字'},{w:'instanceof', k:'关键字'},{w:'in', k:'关键字'},{w:'of', k:'关键字'},
+    {w:'class', k:'关键字'},{w:'extends', k:'关键字'},{w:'super', k:'关键字'},{w:'this', k:'变量'},
+    {w:'import', k:'关键字'},{w:'export', k:'关键字'},{w:'from', k:'关键字'},{w:'as', k:'关键字'},
+    {w:'async', k:'关键字'},{w:'await', k:'关键字'},{w:'yield', k:'关键字'},{w:'delete', k:'关键字'},
+    {w:'void', k:'关键字'},{w:'null', k:'常量'},{w:'undefined', k:'常量'},{w:'true', k:'常量'},
+    {w:'false', k:'常量'},{w:'NaN', k:'常量'},{w:'Infinity', k:'常量'},
+    {w:'console', k:'对象'},{w:'Math', k:'对象'},{w:'JSON', k:'对象'},{w:'Promise', k:'类'},
+    {w:'Array', k:'类'},{w:'Object', k:'类'},{w:'String', k:'类'},{w:'Number', k:'类'},
+    {w:'Boolean', k:'类'},{w:'Map', k:'类'},{w:'Set', k:'类'},{w:'Date', k:'类'},
+    {w:'Error', k:'类'},{w:'RegExp', k:'类'},{w:'window', k:'对象'},{w:'document', k:'对象'},
+    {w:'require', k:'函数'},{w:'module', k:'对象'},{w:'exports', k:'对象'},
+    {w:'console.log', k:'方法'},{w:'console.error', k:'方法'},{w:'console.warn', k:'方法'},
+    {w:'setTimeout', k:'函数'},{w:'setInterval', k:'函数'},{w:'clearTimeout', k:'函数'},{w:'clearInterval', k:'函数'},
+    {w:'parseInt', k:'函数'},{w:'parseFloat', k:'函数'},{w:'isNaN', k:'函数'},
+  ],
+  '.ts': [
+    {w:'interface', k:'关键字'},{w:'type', k:'关键字'},{w:'enum', k:'关键字'},{w:'namespace', k:'关键字'},
+    {w:'readonly', k:'关键字'},{w:'public', k:'关键字'},{w:'private', k:'关键字'},{w:'protected', k:'关键字'},
+    {w:'abstract', k:'关键字'},{w:'implements', k:'关键字'},{w:'declare', k:'关键字'},{w:'as', k:'关键字'},
+    {w:'is', k:'关键字'},{w:'satisfies', k:'关键字'},{w:'infer', k:'关键字'},{w:'keyof', k:'关键字'},
+    {w:'typeof', k:'关键字'},{w:'never', k:'类型'},{w:'unknown', k:'类型'},{w:'any', k:'类型'},
+    {w:'void', k:'类型'},{w:'string', k:'类型'},{w:'number', k:'类型'},{w:'boolean', k:'类型'},
+    {w:'object', k:'类型'},{w:'symbol', k:'类型'},{w:'bigint', k:'类型'},
+  ],
+  '.cs': [
+    {w:'using', k:'关键字'},{w:'namespace', k:'关键字'},{w:'class', k:'关键字'},{w:'interface', k:'关键字'},
+    {w:'struct', k:'关键字'},{w:'enum', k:'关键字'},{w:'public', k:'关键字'},{w:'private', k:'关键字'},
+    {w:'protected', k:'关键字'},{w:'internal', k:'关键字'},{w:'static', k:'关键字'},{w:'readonly', k:'关键字'},
+    {w:'const', k:'关键字'},{w:'void', k:'类型'},{w:'int', k:'类型'},{w:'string', k:'类型'},
+    {w:'bool', k:'类型'},{w:'double', k:'类型'},{w:'float', k:'类型'},{w:'char', k:'类型'},
+    {w:'byte', k:'类型'},{w:'long', k:'类型'},{w:'short', k:'类型'},{w:'object', k:'类型'},
+    {w:'var', k:'关键字'},{w:'new', k:'关键字'},{w:'return', k:'关键字'},{w:'if', k:'关键字'},
+    {w:'else', k:'关键字'},{w:'for', k:'关键字'},{w:'foreach', k:'关键字'},{w:'while', k:'关键字'},
+    {w:'do', k:'关键字'},{w:'switch', k:'关键字'},{w:'case', k:'关键字'},{w:'break', k:'关键字'},
+    {w:'continue', k:'关键字'},{w:'try', k:'关键字'},{w:'catch', k:'关键字'},{w:'finally', k:'关键字'},
+    {w:'throw', k:'关键字'},{w:'this', k:'变量'},{w:'base', k:'变量'},{w:'null', k:'常量'},
+    {w:'true', k:'常量'},{w:'false', k:'常量'},{w:'in', k:'关键字'},{w:'out', k:'关键字'},
+    {w:'ref', k:'关键字'},{w:'params', k:'关键字'},{w:'async', k:'关键字'},{w:'await', k:'关键字'},
+    {w:'Task', k:'类'},{w:'List', k:'类'},{w:'Dictionary', k:'类'},{w:'Console', k:'类'},
+    {w:'Console.WriteLine', k:'方法'},{w:'Console.Write', k:'方法'},{w:'Console.ReadLine', k:'方法'},
+  ],
+  '.go': [
+    {w:'package', k:'关键字'},{w:'import', k:'关键字'},{w:'func', k:'关键字'},{w:'var', k:'关键字'},
+    {w:'const', k:'关键字'},{w:'type', k:'关键字'},{w:'struct', k:'关键字'},{w:'interface', k:'关键字'},
+    {w:'return', k:'关键字'},{w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'for', k:'关键字'},
+    {w:'switch', k:'关键字'},{w:'case', k:'关键字'},{w:'default', k:'关键字'},{w:'break', k:'关键字'},
+    {w:'continue', k:'关键字'},{w:'defer', k:'关键字'},{w:'go', k:'关键字'},{w:'chan', k:'关键字'},
+    {w:'map', k:'关键字'},{w:'range', k:'关键字'},{w:'make', k:'函数'},{w:'new', k:'函数'},
+    {w:'len', k:'函数'},{w:'cap', k:'函数'},{w:'append', k:'函数'},{w:'copy', k:'函数'},
+    {w:'delete', k:'函数'},{w:'panic', k:'函数'},{w:'recover', k:'函数'},{w:'print', k:'函数'},
+    {w:'println', k:'函数'},{w:'fmt', k:'包'},{w:'fmt.Println', k:'方法'},{w:'fmt.Printf', k:'方法'},
+    {w:'fmt.Sprintf', k:'方法'},{w:'fmt.Scan', k:'方法'},{w:'os', k:'包'},{w:'strings', k:'包'},
+    {w:'strconv', k:'包'},{w:'true', k:'常量'},{w:'false', k:'常量'},{w:'nil', k:'常量'},
+  ],
+  '.java': [
+    {w:'public', k:'关键字'},{w:'private', k:'关键字'},{w:'protected', k:'关键字'},{w:'class', k:'关键字'},
+    {w:'interface', k:'关键字'},{w:'extends', k:'关键字'},{w:'implements', k:'关键字'},{w:'package', k:'关键字'},
+    {w:'import', k:'关键字'},{w:'static', k:'关键字'},{w:'final', k:'关键字'},{w:'abstract', k:'关键字'},
+    {w:'void', k:'类型'},{w:'int', k:'类型'},{w:'String', k:'类型'},{w:'boolean', k:'类型'},
+    {w:'double', k:'类型'},{w:'float', k:'类型'},{w:'char', k:'类型'},{w:'long', k:'类型'},
+    {w:'byte', k:'类型'},{w:'short', k:'类型'},{w:'new', k:'关键字'},{w:'return', k:'关键字'},
+    {w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'for', k:'关键字'},{w:'while', k:'关键字'},
+    {w:'do', k:'关键字'},{w:'switch', k:'关键字'},{w:'case', k:'关键字'},{w:'break', k:'关键字'},
+    {w:'continue', k:'关键字'},{w:'try', k:'关键字'},{w:'catch', k:'关键字'},{w:'finally', k:'关键字'},
+    {w:'throw', k:'关键字'},{w:'throws', k:'关键字'},{w:'this', k:'变量'},{w:'super', k:'变量'},
+    {w:'null', k:'常量'},{w:'true', k:'常量'},{w:'false', k:'常量'},{w:'instanceof', k:'关键字'},
+    {w:'synchronized', k:'关键字'},{w:'volatile', k:'关键字'},{w:'transient', k:'关键字'},
+    {w:'System.out.println', k:'方法'},{w:'System.out.print', k:'方法'},
+    {w:'ArrayList', k:'类'},{w:'HashMap', k:'类'},{w:'LinkedList', k:'类'},{w:'HashSet', k:'类'},
+  ],
+  '.cpp': [
+    {w:'#include', k:'预处理'},{w:'#define', k:'预处理'},{w:'#ifndef', k:'预处理'},{w:'#endif', k:'预处理'},
+    {w:'int', k:'类型'},{w:'void', k:'类型'},{w:'char', k:'类型'},{w:'float', k:'类型'},
+    {w:'double', k:'类型'},{w:'bool', k:'类型'},{w:'long', k:'类型'},{w:'short', k:'类型'},
+    {w:'unsigned', k:'关键字'},{w:'signed', k:'关键字'},{w:'const', k:'关键字'},{w:'static', k:'关键字'},
+    {w:'class', k:'关键字'},{w:'struct', k:'关键字'},{w:'union', k:'关键字'},{w:'enum', k:'关键字'},
+    {w:'namespace', k:'关键字'},{w:'using', k:'关键字'},{w:'template', k:'关键字'},{w:'typename', k:'关键字'},
+    {w:'public', k:'关键字'},{w:'private', k:'关键字'},{w:'protected', k:'关键字'},{w:'virtual', k:'关键字'},
+    {w:'override', k:'关键字'},{w:'return', k:'关键字'},{w:'if', k:'关键字'},{w:'else', k:'关键字'},
+    {w:'for', k:'关键字'},{w:'while', k:'关键字'},{w:'do', k:'关键字'},{w:'switch', k:'关键字'},
+    {w:'case', k:'关键字'},{w:'break', k:'关键字'},{w:'continue', k:'关键字'},{w:'try', k:'关键字'},
+    {w:'catch', k:'关键字'},{w:'throw', k:'关键字'},{w:'new', k:'关键字'},{w:'delete', k:'关键字'},
+    {w:'this', k:'变量'},{w:'nullptr', k:'常量'},{w:'true', k:'常量'},{w:'false', k:'常量'},
+    {w:'std', k:'命名空间'},{w:'std::cout', k:'对象'},{w:'std::cin', k:'对象'},{w:'std::endl', k:'常量'},
+    {w:'std::string', k:'类型'},{w:'std::vector', k:'类型'},{w:'std::map', k:'类型'},{w:'std::set', k:'类型'},
+    {w:'auto', k:'关键字'},{w:'sizeof', k:'运算符'},
+  ],
+  '.c': [
+    {w:'#include', k:'预处理'},{w:'#define', k:'预处理'},{w:'#ifndef', k:'预处理'},{w:'#endif', k:'预处理'},
+    {w:'int', k:'类型'},{w:'void', k:'类型'},{w:'char', k:'类型'},{w:'float', k:'类型'},
+    {w:'double', k:'类型'},{w:'long', k:'类型'},{w:'short', k:'类型'},{w:'unsigned', k:'关键字'},
+    {w:'signed', k:'关键字'},{w:'const', k:'关键字'},{w:'static', k:'关键字'},{w:'struct', k:'关键字'},
+    {w:'union', k:'关键字'},{w:'enum', k:'关键字'},{w:'typedef', k:'关键字'},{w:'return', k:'关键字'},
+    {w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'for', k:'关键字'},{w:'while', k:'关键字'},
+    {w:'do', k:'关键字'},{w:'switch', k:'关键字'},{w:'case', k:'关键字'},{w:'break', k:'关键字'},
+    {w:'continue', k:'关键字'},{w:'sizeof', k:'运算符'},{w:'NULL', k:'常量'},
+    {w:'printf', k:'函数'},{w:'scanf', k:'函数'},{w:'fprintf', k:'函数'},{w:'fscanf', k:'函数'},
+    {w:'sprintf', k:'函数'},{w:'malloc', k:'函数'},{w:'calloc', k:'函数'},{w:'realloc', k:'函数'},
+    {w:'free', k:'函数'},{w:'fopen', k:'函数'},{w:'fclose', k:'函数'},{w:'fread', k:'函数'},
+    {w:'fwrite', k:'函数'},{w:'fgets', k:'函数'},{w:'fputs', k:'函数'},{w:'strlen', k:'函数'},
+    {w:'strcpy', k:'函数'},{w:'strcat', k:'函数'},{w:'strcmp', k:'函数'},{w:'memcpy', k:'函数'},
+  ],
+  '.html': [
+    {w:'<html', k:'标签'},{w:'<head', k:'标签'},{w:'<body', k:'标签'},{w:'<div', k:'标签'},
+    {w:'<span', k:'标签'},{w:'<p', k:'标签'},{w:'<a', k:'标签'},{w:'<img', k:'标签'},
+    {w:'<ul', k:'标签'},{w:'<ol', k:'标签'},{w:'<li', k:'标签'},{w:'<table', k:'标签'},
+    {w:'<tr', k:'标签'},{w:'<td', k:'标签'},{w:'<th', k:'标签'},{w:'<form', k:'标签'},
+    {w:'<input', k:'标签'},{w:'<button', k:'标签'},{w:'<select', k:'标签'},{w:'<option', k:'标签'},
+    {w:'<textarea', k:'标签'},{w:'<label', k:'标签'},{w:'<script', k:'标签'},{w:'<style', k:'标签'},
+    {w:'<link', k:'标签'},{w:'<meta', k:'标签'},{w:'<title', k:'标签'},{w:'<h1', k:'标签'},
+    {w:'<h2', k:'标签'},{w:'<h3', k:'标签'},{w:'<br', k:'标签'},{w:'<hr', k:'标签'},
+  ],
+  '.css': [
+    {w:'display', k:'属性'},{w:'position', k:'属性'},{w:'margin', k:'属性'},{w:'padding', k:'属性'},
+    {w:'border', k:'属性'},{w:'width', k:'属性'},{w:'height', k:'属性'},{w:'color', k:'属性'},
+    {w:'background', k:'属性'},{w:'font-size', k:'属性'},{w:'font-weight', k:'属性'},{w:'text-align', k:'属性'},
+    {w:'flex', k:'属性'},{w:'flex-direction', k:'属性'},{w:'justify-content', k:'属性'},{w:'align-items', k:'属性'},
+    {w:'grid', k:'属性'},{w:'grid-template', k:'属性'},{w:'gap', k:'属性'},{w:'opacity', k:'属性'},
+    {w:'transition', k:'属性'},{w:'transform', k:'属性'},{w:'animation', k:'属性'},{w:'z-index', k:'属性'},
+    {w:'overflow', k:'属性'},{w:'border-radius', k:'属性'},{w:'box-shadow', k:'属性'},{w:'cursor', k:'属性'},
+    {w:'none', k:'值'},{w:'block', k:'值'},{w:'flex', k:'值'},{w:'grid', k:'值'},
+    {w:'absolute', k:'值'},{w:'relative', k:'值'},{w:'fixed', k:'值'},{w:'center', k:'值'},
+  ],
+};
+
+// 更多语言补全
+const AC_KEYWORDS_EXTRA = {
+  '.rb': [
+    {w:'def', k:'关键字'},{w:'class', k:'关键字'},{w:'module', k:'关键字'},{w:'require', k:'关键字'},
+    {w:'require_relative', k:'关键字'},{w:'return', k:'关键字'},{w:'if', k:'关键字'},{w:'elsif', k:'关键字'},
+    {w:'else', k:'关键字'},{w:'unless', k:'关键字'},{w:'while', k:'关键字'},{w:'until', k:'关键字'},
+    {w:'for', k:'关键字'},{w:'do', k:'关键字'},{w:'break', k:'关键字'},{w:'next', k:'关键字'},
+    {w:'yield', k:'关键字'},{w:'begin', k:'关键字'},{w:'rescue', k:'关键字'},{w:'ensure', k:'关键字'},
+    {w:'raise', k:'关键字'},{w:'attr_accessor', k:'方法'},{w:'attr_reader', k:'方法'},{w:'attr_writer', k:'方法'},
+    {w:'puts', k:'方法'},{w:'print', k:'方法'},{w:'p', k:'方法'},{w:'nil', k:'常量'},
+    {w:'true', k:'常量'},{w:'false', k:'常量'},{w:'self', k:'变量'},{w:'super', k:'关键字'},
+    {w:'lambda', k:'方法'},{w:'proc', k:'方法'},{w:'each', k:'方法'},{w:'map', k:'方法'},
+    {w:'select', k:'方法'},{w:'reject', k:'方法'},{w:'reduce', k:'方法'},{w:'collect', k:'方法'},
+    {w:'include', k:'关键字'},{w:'extend', k:'关键字'},{w:'new', k:'方法'},{w:'length', k:'方法'},
+    {w:'size', k:'方法'},{w:'split', k:'方法'},{w:'join', k:'方法'},{w:'to_s', k:'方法'},
+    {w:'to_i', k:'方法'},{w:'to_f', k:'方法'},{w:'to_a', k:'方法'},{w:'to_h', k:'方法'},
+  ],
+  '.php': [
+    {w:'function', k:'关键字'},{w:'class', k:'关键字'},{w:'interface', k:'关键字'},{w:'trait', k:'关键字'},
+    {w:'extends', k:'关键字'},{w:'implements', k:'关键字'},{w:'use', k:'关键字'},{w:'namespace', k:'关键字'},
+    {w:'return', k:'关键字'},{w:'if', k:'关键字'},{w:'elseif', k:'关键字'},{w:'else', k:'关键字'},
+    {w:'for', k:'关键字'},{w:'foreach', k:'关键字'},{w:'while', k:'关键字'},{w:'do', k:'关键字'},
+    {w:'switch', k:'关键字'},{w:'case', k:'关键字'},{w:'break', k:'关键字'},{w:'continue', k:'关键字'},
+    {w:'try', k:'关键字'},{w:'catch', k:'关键字'},{w:'finally', k:'关键字'},{w:'throw', k:'关键字'},
+    {w:'new', k:'关键字'},{w:'echo', k:'语言结构'},{w:'print', k:'语言结构'},{w:'isset', k:'函数'},
+    {w:'unset', k:'函数'},{w:'empty', k:'函数'},{w:'array', k:'函数'},{w:'count', k:'函数'},
+    {w:'strlen', k:'函数'},{w:'substr', k:'函数'},{w:'str_replace', k:'函数'},{w:'explode', k:'函数'},
+    {w:'implode', k:'函数'},{w:'json_encode', k:'函数'},{w:'json_decode', k:'函数'},
+    {w:'true', k:'常量'},{w:'false', k:'常量'},{w:'null', k:'常量'},{w:'this', k:'变量'},
+    {w:'self', k:'变量'},{w:'parent', k:'变量'},{w:'public', k:'关键字'},{w:'private', k:'关键字'},
+    {w:'protected', k:'关键字'},{w:'static', k:'关键字'},{w:'const', k:'关键字'},{w:'abstract', k:'关键字'},
+    {w:'final', k:'关键字'},{w:'var', k:'关键字'},{w:'global', k:'关键字'},{w:'require', k:'关键字'},
+    {w:'include', k:'关键字'},{w:'require_once', k:'关键字'},{w:'include_once', k:'关键字'},
+  ],
+  '.sh': [
+    {w:'if', k:'关键字'},{w:'then', k:'关键字'},{w:'else', k:'关键字'},{w:'elif', k:'关键字'},
+    {w:'fi', k:'关键字'},{w:'for', k:'关键字'},{w:'in', k:'关键字'},{w:'do', k:'关键字'},
+    {w:'done', k:'关键字'},{w:'while', k:'关键字'},{w:'until', k:'关键字'},{w:'case', k:'关键字'},
+    {w:'esac', k:'关键字'},{w:'break', k:'关键字'},{w:'continue', k:'关键字'},{w:'return', k:'关键字'},
+    {w:'function', k:'关键字'},{w:'echo', k:'命令'},{w:'printf', k:'命令'},{w:'read', k:'命令'},
+    {w:'export', k:'命令'},{w:'source', k:'命令'},{w:'alias', k:'命令'},{w:'cd', k:'命令'},
+    {w:'pwd', k:'命令'},{w:'ls', k:'命令'},{w:'cp', k:'命令'},{w:'mv', k:'命令'},
+    {w:'rm', k:'命令'},{w:'mkdir', k:'命令'},{w:'rmdir', k:'命令'},{w:'cat', k:'命令'},
+    {w:'grep', k:'命令'},{w:'sed', k:'命令'},{w:'awk', k:'命令'},{w:'find', k:'命令'},
+    {w:'xargs', k:'命令'},{w:'sort', k:'命令'},{w:'uniq', k:'命令'},{w:'head', k:'命令'},
+    {w:'tail', k:'命令'},{w:'wc', k:'命令'},{w:'tr', k:'命令'},{w:'cut', k:'命令'},
+    {w:'test', k:'命令'},{w:'exit', k:'命令'},{w:'eval', k:'命令'},{w:'local', k:'关键字'},
+  ],
+  '.ps1': [
+    {w:'function', k:'关键字'},{w:'param', k:'关键字'},{w:'if', k:'关键字'},{w:'else', k:'关键字'},
+    {w:'elseif', k:'关键字'},{w:'switch', k:'关键字'},{w:'for', k:'关键字'},{w:'foreach', k:'关键字'},
+    {w:'while', k:'关键字'},{w:'do', k:'关键字'},{w:'until', k:'关键字'},{w:'break', k:'关键字'},
+    {w:'continue', k:'关键字'},{w:'return', k:'关键字'},{w:'throw', k:'关键字'},{w:'try', k:'关键字'},
+    {w:'catch', k:'关键字'},{w:'finally', k:'关键字'},{w:'begin', k:'关键字'},{w:'process', k:'关键字'},
+    {w:'end', k:'关键字'},{w:'Write-Output', k:'命令'},{w:'Write-Host', k:'命令'},{w:'Write-Error', k:'命令'},
+    {w:'Write-Warning', k:'命令'},{w:'Write-Verbose', k:'命令'},{w:'Get-Content', k:'命令'},
+    {w:'Set-Content', k:'命令'},{w:'Get-ChildItem', k:'命令'},{w:'Set-Location', k:'命令'},
+    {w:'Get-Location', k:'命令'},{w:'New-Item', k:'命令'},{w:'Remove-Item', k:'命令'},
+    {w:'Copy-Item', k:'命令'},{w:'Move-Item', k:'命令'},{w:'Test-Path', k:'命令'},
+    {w:'Select-String', k:'命令'},{w:'Where-Object', k:'命令'},{w:'ForEach-Object', k:'命令'},
+    {w:'Sort-Object', k:'命令'},{w:'Select-Object', k:'命令'},{w:'Invoke-WebRequest', k:'命令'},
+    {w:'$true', k:'常量'},{w:'$false', k:'常量'},{w:'$null', k:'常量'},{w:'$args', k:'变量'},
+    {w:'$input', k:'变量'},{w:'$ErrorActionPreference', k:'变量'},
+  ],
+  '.rs': [
+    {w:'fn', k:'关键字'},{w:'let', k:'关键字'},{w:'mut', k:'关键字'},{w:'const', k:'关键字'},
+    {w:'static', k:'关键字'},{w:'struct', k:'关键字'},{w:'enum', k:'关键字'},{w:'trait', k:'关键字'},
+    {w:'impl', k:'关键字'},{w:'pub', k:'关键字'},{w:'use', k:'关键字'},{w:'mod', k:'关键字'},
+    {w:'return', k:'关键字'},{w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'match', k:'关键字'},
+    {w:'for', k:'关键字'},{w:'while', k:'关键字'},{w:'loop', k:'关键字'},{w:'break', k:'关键字'},
+    {w:'continue', k:'关键字'},{w:'in', k:'关键字'},{w:'ref', k:'关键字'},{w:'as', k:'关键字'},
+    {w:'where', k:'关键字'},{w:'unsafe', k:'关键字'},{w:'async', k:'关键字'},{w:'await', k:'关键字'},
+    {w:'move', k:'关键字'},{w:'dyn', k:'关键字'},{w:'Self', k:'类型'},{w:'self', k:'变量'},
+    {w:'true', k:'常量'},{w:'false', k:'常量'},{w:'String', k:'类型'},{w:'Vec', k:'类型'},
+    {w:'HashMap', k:'类型'},{w:'HashSet', k:'类型'},{w:'Option', k:'类型'},{w:'Result', k:'类型'},
+    {w:'println!', k:'宏'},{w:'print!', k:'宏'},{w:'eprintln!', k:'宏'},{w:'eprint!', k:'宏'},
+    {w:'vec!', k:'宏'},{w:'format!', k:'宏'},{w:'panic!', k:'宏'},{w:'todo!', k:'宏'},
+    {w:'unimplemented!', k:'宏'},{w:'derive', k:'属性'},{w:'test', k:'属性'},
+  ],
+  '.swift': [
+    {w:'func', k:'关键字'},{w:'let', k:'关键字'},{w:'var', k:'关键字'},{w:'class', k:'关键字'},
+    {w:'struct', k:'关键字'},{w:'enum', k:'关键字'},{w:'protocol', k:'关键字'},{w:'extension', k:'关键字'},
+    {w:'import', k:'关键字'},{w:'return', k:'关键字'},{w:'if', k:'关键字'},{w:'else', k:'关键字'},
+    {w:'guard', k:'关键字'},{w:'for', k:'关键字'},{w:'while', k:'关键字'},{w:'switch', k:'关键字'},
+    {w:'case', k:'关键字'},{w:'default', k:'关键字'},{w:'break', k:'关键字'},{w:'continue', k:'关键字'},
+    {w:'in', k:'关键字'},{w:'as', k:'关键字'},{w:'is', k:'关键字'},{w:'try', k:'关键字'},
+    {w:'catch', k:'关键字'},{w:'throw', k:'关键字'},{w:'throws', k:'关键字'},{w:'rethrows', k:'关键字'},
+    {w:'init', k:'方法'},{w:'deinit', k:'方法'},{w:'self', k:'变量'},{w:'super', k:'变量'},
+    {w:'nil', k:'常量'},{w:'true', k:'常量'},{w:'false', k:'常量'},{w:'public', k:'关键字'},
+    {w:'private', k:'关键字'},{w:'internal', k:'关键字'},{w:'fileprivate', k:'关键字'},
+    {w:'static', k:'关键字'},{w:'final', k:'关键字'},{w:'lazy', k:'关键字'},{w:'weak', k:'关键字'},
+    {w:'unowned', k:'关键字'},{w:'override', k:'关键字'},{w:'required', k:'关键字'},
+    {w:'convenience', k:'关键字'},{w:'mutating', k:'关键字'},{w:'nonmutating', k:'关键字'},
+    {w:'async', k:'关键字'},{w:'await', k:'关键字'},{w:'actor', k:'关键字'},{w:'some', k:'关键字'},
+    {w:'any', k:'关键字'},{w:'print', k:'函数'},{w:'String', k:'类型'},{w:'Int', k:'类型'},
+    {w:'Double', k:'类型'},{w:'Float', k:'类型'},{w:'Bool', k:'类型'},{w:'Array', k:'类型'},
+    {w:'Dictionary', k:'类型'},{w:'Set', k:'类型'},{w:'Optional', k:'类型'},
+  ],
+  '.kt': [
+    {w:'fun', k:'关键字'},{w:'val', k:'关键字'},{w:'var', k:'关键字'},{w:'class', k:'关键字'},
+    {w:'object', k:'关键字'},{w:'interface', k:'关键字'},{w:'data', k:'关键字'},{w:'sealed', k:'关键字'},
+    {w:'enum', k:'关键字'},{w:'import', k:'关键字'},{w:'package', k:'关键字'},{w:'return', k:'关键字'},
+    {w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'when', k:'关键字'},{w:'for', k:'关键字'},
+    {w:'while', k:'关键字'},{w:'do', k:'关键字'},{w:'break', k:'关键字'},{w:'continue', k:'关键字'},
+    {w:'in', k:'关键字'},{w:'is', k:'关键字'},{w:'as', k:'关键字'},{w:'try', k:'关键字'},
+    {w:'catch', k:'关键字'},{w:'finally', k:'关键字'},{w:'throw', k:'关键字'},{w:'this', k:'变量'},
+    {w:'super', k:'变量'},{w:'null', k:'常量'},{w:'true', k:'常量'},{w:'false', k:'常量'},
+    {w:'public', k:'关键字'},{w:'private', k:'关键字'},{w:'protected', k:'关键字'},{w:'internal', k:'关键字'},
+    {w:'open', k:'关键字'},{w:'abstract', k:'关键字'},{w:'final', k:'关键字'},{w:'override', k:'关键字'},
+    {w:'companion', k:'关键字'},{w:'init', k:'关键字'},{w:'constructor', k:'关键字'},
+    {w:'suspend', k:'关键字'},{w:'inline', k:'关键字'},{w:'reified', k:'关键字'},{w:'vararg', k:'关键字'},
+    {w:'println', k:'函数'},{w:'print', k:'函数'},{w:'String', k:'类型'},{w:'Int', k:'类型'},
+    {w:'Long', k:'类型'},{w:'Double', k:'类型'},{w:'Float', k:'类型'},{w:'Boolean', k:'类型'},
+    {w:'List', k:'类型'},{w:'Map', k:'类型'},{w:'Set', k:'类型'},{w:'Array', k:'类型'},
+    {w:'Pair', k:'类型'},{w:'Triple', k:'类型'},{w:'Unit', k:'类型'},{w:'Any', k:'类型'},
+  ],
+  '.dart': [
+    {w:'void', k:'类型'},{w:'int', k:'类型'},{w:'double', k:'类型'},{w:'String', k:'类型'},
+    {w:'bool', k:'类型'},{w:'var', k:'关键字'},{w:'final', k:'关键字'},{w:'const', k:'关键字'},
+    {w:'late', k:'关键字'},{w:'dynamic', k:'关键字'},{w:'class', k:'关键字'},{w:'extends', k:'关键字'},
+    {w:'implements', k:'关键字'},{w:'with', k:'关键字'},{w:'mixin', k:'关键字'},{w:'abstract', k:'关键字'},
+    {w:'enum', k:'关键字'},{w:'typedef', k:'关键字'},{w:'return', k:'关键字'},{w:'if', k:'关键字'},
+    {w:'else', k:'关键字'},{w:'switch', k:'关键字'},{w:'case', k:'关键字'},{w:'default', k:'关键字'},
+    {w:'for', k:'关键字'},{w:'while', k:'关键字'},{w:'do', k:'关键字'},{w:'break', k:'关键字'},
+    {w:'continue', k:'关键字'},{w:'in', k:'关键字'},{w:'is', k:'关键字'},{w:'as', k:'关键字'},
+    {w:'try', k:'关键字'},{w:'catch', k:'关键字'},{w:'finally', k:'关键字'},{w:'throw', k:'关键字'},
+    {w:'rethrow', k:'关键字'},{w:'this', k:'变量'},{w:'super', k:'变量'},{w:'null', k:'常量'},
+    {w:'true', k:'常量'},{w:'false', k:'常量'},{w:'print', k:'函数'},{w:'debugPrint', k:'函数'},
+    {w:'List', k:'类型'},{w:'Map', k:'类型'},{w:'Set', k:'类型'},{w:'Future', k:'类型'},
+    {w:'Stream', k:'类型'},{w:'Duration', k:'类型'},{w:'DateTime', k:'类型'},
+    {w:'override', k:'注解'},{w:'required', k:'关键字'},{w:'factory', k:'关键字'},
+    {w:'get', k:'关键字'},{w:'set', k:'关键字'},{w:'static', k:'关键字'},{w:'external', k:'关键字'},
+    {w:'async', k:'关键字'},{w:'await', k:'关键字'},{w:'sync', k:'关键字'},{w:'yield', k:'关键字'},
+  ],
+  '.sql': [
+    {w:'SELECT', k:'关键字'},{w:'FROM', k:'关键字'},{w:'WHERE', k:'关键字'},{w:'INSERT', k:'关键字'},
+    {w:'INTO', k:'关键字'},{w:'VALUES', k:'关键字'},{w:'UPDATE', k:'关键字'},{w:'SET', k:'关键字'},
+    {w:'DELETE', k:'关键字'},{w:'CREATE', k:'关键字'},{w:'TABLE', k:'关键字'},{w:'ALTER', k:'关键字'},
+    {w:'DROP', k:'关键字'},{w:'INDEX', k:'关键字'},{w:'VIEW', k:'关键字'},{w:'JOIN', k:'关键字'},
+    {w:'INNER', k:'关键字'},{w:'LEFT', k:'关键字'},{w:'RIGHT', k:'关键字'},{w:'OUTER', k:'关键字'},
+    {w:'FULL', k:'关键字'},{w:'ON', k:'关键字'},{w:'GROUP', k:'关键字'},{w:'BY', k:'关键字'},
+    {w:'ORDER', k:'关键字'},{w:'HAVING', k:'关键字'},{w:'LIMIT', k:'关键字'},{w:'OFFSET', k:'关键字'},
+    {w:'AS', k:'关键字'},{w:'AND', k:'运算符'},{w:'OR', k:'运算符'},{w:'NOT', k:'运算符'},
+    {w:'NULL', k:'常量'},{w:'NOT NULL', k:'约束'},{w:'PRIMARY', k:'关键字'},{w:'FOREIGN', k:'关键字'},
+    {w:'KEY', k:'关键字'},{w:'UNIQUE', k:'关键字'},{w:'DEFAULT', k:'关键字'},{w:'CHECK', k:'关键字'},
+    {w:'CASE', k:'关键字'},{w:'WHEN', k:'关键字'},{w:'THEN', k:'关键字'},{w:'ELSE', k:'关键字'},
+    {w:'END', k:'关键字'},{w:'DISTINCT', k:'关键字'},{w:'COUNT', k:'函数'},{w:'SUM', k:'函数'},
+    {w:'AVG', k:'函数'},{w:'MIN', k:'函数'},{w:'MAX', k:'函数'},{w:'UNION', k:'关键字'},
+    {w:'ALL', k:'关键字'},{w:'EXISTS', k:'关键字'},{w:'IN', k:'关键字'},{w:'BETWEEN', k:'关键字'},
+    {w:'LIKE', k:'关键字'},{w:'IS', k:'关键字'},{w:'ASC', k:'关键字'},{w:'DESC', k:'关键字'},
+  ],
+  '.json': [
+    {w:'true', k:'常量'},{w:'false', k:'常量'},{w:'null', k:'常量'},
+  ],
+  '.yaml': [
+    {w:'true', k:'常量'},{w:'false', k:'常量'},{w:'null', k:'常量'},{w:'yes', k:'常量'},{w:'no', k:'常量'},
+  ],
+  '.xml': [
+    {w:'encoding', k:'属性'},{w:'version', k:'属性'},{w:'standalone', k:'属性'},
+  ],
+  '.bat': [
+    {w:'echo', k:'命令'},{w:'set', k:'命令'},{w:'if', k:'关键字'},{w:'else', k:'关键字'},
+    {w:'for', k:'关键字'},{w:'do', k:'关键字'},{w:'goto', k:'命令'},{w:'call', k:'命令'},
+    {w:'exit', k:'命令'},{w:'pause', k:'命令'},{w:'rem', k:'命令'},{w:'start', k:'命令'},
+    {w:'mkdir', k:'命令'},{w:'rmdir', k:'命令'},{w:'del', k:'命令'},{w:'copy', k:'命令'},
+    {w:'move', k:'命令'},{w:'xcopy', k:'命令'},{w:'robocopy', k:'命令'},{w:'tasklist', k:'命令'},
+    {w:'taskkill', k:'命令'},{w:'timeout', k:'命令'},{w:'choice', k:'命令'},{w:'setlocal', k:'命令'},
+    {w:'endlocal', k:'命令'},{w:'enabledelayedexpansion', k:'参数'},{w:'EQU', k:'运算符'},
+    {w:'NEQ', k:'运算符'},{w:'LSS', k:'运算符'},{w:'LEQ', k:'运算符'},{w:'GTR', k:'运算符'},{w:'GEQ', k:'运算符'},
+  ],
+  '.lua': [
+    {w:'function', k:'关键字'},{w:'local', k:'关键字'},{w:'if', k:'关键字'},{w:'then', k:'关键字'},
+    {w:'else', k:'关键字'},{w:'elseif', k:'关键字'},{w:'end', k:'关键字'},{w:'for', k:'关键字'},
+    {w:'while', k:'关键字'},{w:'do', k:'关键字'},{w:'repeat', k:'关键字'},{w:'until', k:'关键字'},
+    {w:'break', k:'关键字'},{w:'return', k:'关键字'},{w:'and', k:'运算符'},{w:'or', k:'运算符'},
+    {w:'not', k:'运算符'},{w:'nil', k:'常量'},{w:'true', k:'常量'},{w:'false', k:'常量'},
+    {w:'self', k:'变量'},{w:'print', k:'函数'},{w:'pairs', k:'函数'},{w:'ipairs', k:'函数'},
+    {w:'type', k:'函数'},{w:'tostring', k:'函数'},{w:'tonumber', k:'函数'},{w:'require', k:'函数'},
+    {w:'pcall', k:'函数'},{w:'xpcall', k:'函数'},{w:'error', k:'函数'},{w:'assert', k:'函数'},
+    {w:'select', k:'函数'},{w:'next', k:'函数'},{w:'rawget', k:'函数'},{w:'rawset', k:'函数'},
+    {w:'setmetatable', k:'函数'},{w:'getmetatable', k:'函数'},{w:'table', k:'库'},{w:'string', k:'库'},
+    {w:'math', k:'库'},{w:'io', k:'库'},{w:'os', k:'库'},{w:'table.insert', k:'方法'},
+    {w:'table.remove', k:'方法'},{w:'string.format', k:'方法'},{w:'string.find', k:'方法'},
+    {w:'string.sub', k:'方法'},{w:'string.gsub', k:'方法'},{w:'string.len', k:'方法'},
+  ],
+  '.r': [
+    {w:'function', k:'关键字'},{w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'for', k:'关键字'},
+    {w:'while', k:'关键字'},{w:'repeat', k:'关键字'},{w:'break', k:'关键字'},{w:'next', k:'关键字'},
+    {w:'return', k:'关键字'},{w:'in', k:'关键字'},{w:'TRUE', k:'常量'},{w:'FALSE', k:'常量'},
+    {w:'NULL', k:'常量'},{w:'NA', k:'常量'},{w:'NaN', k:'常量'},{w:'Inf', k:'常量'},
+    {w:'library', k:'函数'},{w:'require', k:'函数'},{w:'source', k:'函数'},{w:'print', k:'函数'},
+    {w:'cat', k:'函数'},{w:'paste', k:'函数'},{w:'paste0', k:'函数'},{w:'c', k:'函数'},
+    {w:'list', k:'函数'},{w:'vector', k:'函数'},{w:'matrix', k:'函数'},{w:'data.frame', k:'函数'},
+    {w:'factor', k:'函数'},{w:'length', k:'函数'},{w:'nrow', k:'函数'},{w:'ncol', k:'函数'},
+    {w:'names', k:'函数'},{w:'colnames', k:'函数'},{w:'rownames', k:'函数'},{w:'head', k:'函数'},
+    {w:'tail', k:'函数'},{w:'summary', k:'函数'},{w:'str', k:'函数'},{w:'class', k:'函数'},
+    {w:'typeof', k:'函数'},{w:'lapply', k:'函数'},{w:'sapply', k:'函数'},{w:'vapply', k:'函数'},
+    {w:'mapply', k:'函数'},{w:'Map', k:'函数'},{w:'Reduce', k:'函数'},{w:'Filter', k:'函数'},
+    {w:'Find', k:'函数'},{w:'Position', k:'函数'},{w:'ggplot', k:'函数'},{w:'aes', k:'函数'},
+    {w:'geom_line', k:'函数'},{w:'geom_point', k:'函数'},{w:'geom_bar', k:'函数'},
+  ],
+  '.scss': [
+    {w:'mixin', k:'关键字'},{w:'include', k:'关键字'},{w:'extend', k:'关键字'},{w:'import', k:'关键字'},
+    {w:'use', k:'关键字'},{w:'forward', k:'关键字'},{w:'function', k:'关键字'},{w:'return', k:'关键字'},
+    {w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'for', k:'关键字'},{w:'each', k:'关键字'},
+    {w:'while', k:'关键字'},{w:'through', k:'关键字'},{w:'in', k:'关键字'},{w:'from', k:'关键字'},
+    {w:'to', k:'关键字'},{w:'@content', k:'关键字'},{w:'@debug', k:'关键字'},{w:'@warn', k:'关键字'},
+    {w:'@error', k:'关键字'},{w:'$variables', k:'变量'},{w:'@media', k:'规则'},{w:'@supports', k:'规则'},
+    {w:'@font-face', k:'规则'},{w:'@keyframes', k:'规则'},{w:'@import', k:'规则'},
+  ],
+  '.vue': [
+    {w:'template', k:'标签'},{w:'script', k:'标签'},{w:'style', k:'标签'},{w:'setup', k:'关键字'},
+    {w:'ref', k:'函数'},{w:'reactive', k:'函数'},{w:'computed', k:'函数'},{w:'watch', k:'函数'},
+    {w:'watchEffect', k:'函数'},{w:'onMounted', k:'函数'},{w:'onUnmounted', k:'函数'},
+    {w:'onBeforeMount', k:'函数'},{w:'onBeforeUnmount', k:'函数'},{w:'onUpdated', k:'函数'},
+    {w:'defineProps', k:'宏'},{w:'defineEmits', k:'宏'},{w:'defineExpose', k:'宏'},
+    {w:'withDefaults', k:'宏'},{w:'nextTick', k:'函数'},{w:'provide', k:'函数'},{w:'inject', k:'函数'},
+    {w:'toRef', k:'函数'},{w:'toRefs', k:'函数'},{w:'unref', k:'函数'},{w:'isRef', k:'函数'},
+    {w:'isReactive', k:'函数'},{w:'isComputed', k:'函数'},{w:'useSlots', k:'函数'},{w:'useAttrs', k:'函数'},
+  ],
+};
+
+// 合并所有内置关键字
+const AC_ALL = {...AC_KEYWORDS, ...AC_KEYWORDS_EXTRA};
+
+// 通用补全（所有文件类型）
+const AC_COMMON = [
+  {w:'if', k:'关键字'},{w:'else', k:'关键字'},{w:'for', k:'关键字'},{w:'while', k:'关键字'},
+  {w:'return', k:'关键字'},{w:'function', k:'关键字'},{w:'true', k:'常量'},{w:'false', k:'常量'},
+  {w:'null', k:'常量'},{w:'undefined', k:'常量'},{w:'break', k:'关键字'},{w:'continue', k:'关键字'},
+];
+
+const acState = { show: false, list: [], selected: 0, wordStart: 0, wordEnd: 0 };
+const acFileCache = { path: '', words: [] };
+
+function getAcKeywords(ext) {
+  return AC_ALL[ext] || AC_COMMON;
+}
+
+// 从当前文件内容提取所有单词作为补全候选
+function getFileWords(ta, f) {
+  if (acFileCache.path === f.path && acFileCache.words.length > 0) {
+    return acFileCache.words;
+  }
+  const text = ta.value;
+  // 匹配所有标识符：字母/下划线开头，可含点（如 obj.method）
+  const raw = text.match(/[A-Za-z_][A-Za-z0-9_]*\.?[A-Za-z0-9_]*/g) || [];
+  const seen = new Set();
+  const words = [];
+  for (const w of raw) {
+    if (w.length >= 2 && !seen.has(w)) {
+      seen.add(w);
+      words.push({w: w, k: '当前文件'});
+    }
+  }
+  acFileCache.path = f.path;
+  acFileCache.words = words;
+  return words;
+}
+
+function getCurrentWord(ta) {
+  const pos = ta.selectionStart;
+  const text = ta.value.substring(0, pos);
+  const m = text.match(/[A-Za-z_#][A-Za-z0-9_#.]*$/);
+  if (!m) return null;
+  return { word: m[0], start: pos - m[0].length, end: pos };
+}
+
+function getCursorPos(ta) {
+  const rect = ta.getBoundingClientRect();
+  const text = ta.value.substring(0, ta.selectionStart);
+  const lines = text.split('\n');
+  const lineIdx = lines.length - 1;
+  const col = lines[lines.length - 1].length;
+  const lineHeight = 22.4;
+  const charWidth = 8.4;
+  const x = rect.left + ta.clientLeft + 12 + col * charWidth - ta.scrollLeft;
+  const y = rect.top + ta.clientTop + 12 + (lineIdx + 1) * lineHeight - ta.scrollTop;
+  return { x, y };
+}
+
+function handleAutocomplete(ta, f) {
+  const ext = '.' + (f.path.split('.').pop() || '');
+  const cur = getCurrentWord(ta);
+  if (!cur || cur.word.length < 2) {
+    hideAutocomplete();
+    return;
+  }
+  // 合并内置关键字 + 当前文件中的单词
+  const keywords = getAcKeywords(ext);
+  const fileWords = getFileWords(ta, f);
+  const all = [...keywords, ...fileWords];
+  const seen = new Set();
+  const matches = [];
+  for (const k of all) {
+    if (k.w.toLowerCase().startsWith(cur.word.toLowerCase()) && k.w !== cur.word && !seen.has(k.w)) {
+      seen.add(k.w);
+      matches.push(k);
+    }
+  }
+  if (matches.length === 0) {
+    hideAutocomplete();
+    return;
+  }
+  acState.list = matches.slice(0, 12);
+  acState.selected = 0;
+  acState.wordStart = cur.start;
+  acState.wordEnd = cur.end;
+  acState.show = true;
+  renderAutocompleteDropdown(ta);
+}
+
+function renderAutocompleteDropdown(ta) {
+  let dd = document.getElementById('autocompleteDropdown');
+  if (!dd) {
+    dd = document.createElement('div');
+    dd.id = 'autocompleteDropdown';
+    dd.className = 'autocomplete';
+    document.body.appendChild(dd);
+  }
+  const pos = getCursorPos(ta);
+  dd.style.left = pos.x + 'px';
+  dd.style.top = (pos.y + 4) + 'px';
+  renderAutocompleteList();
+  dd.classList.add('show');
+}
+
+function renderAutocompleteList() {
+  const dd = document.getElementById('autocompleteDropdown');
+  if (!dd) return;
+  dd.innerHTML = '';
+  acState.list.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'autocomplete-item' + (i === acState.selected ? ' active' : '');
+    div.innerHTML = `<span class="ac-keyword">${item.w}</span><span class="ac-kind">${item.k}</span>`;
+    div.onmousedown = (e) => {
+      e.preventDefault();
+      acState.selected = i;
+      const ta = document.getElementById('codeArea');
+      const f = state.openFiles.find(x => x.path === state.activeTab);
+      acceptAutocomplete(ta, f);
+    };
+    dd.appendChild(div);
+  });
+}
+
+function acceptAutocomplete(ta, f) {
+  if (acState.list.length === 0 || !acState.show) return;
+  const item = acState.list[acState.selected];
+  const before = ta.value.substring(0, acState.wordStart);
+  const after = ta.value.substring(acState.wordEnd);
+  ta.value = before + item.w + after;
+  ta.selectionStart = ta.selectionEnd = acState.wordStart + item.w.length;
+  f.content = ta.value;
+  f.saved = false;
+  updateLineNums();
+  renderTabs();
+  hideAutocomplete();
+  ta.focus();
+}
+
+function hideAutocomplete() {
+  acState.show = false;
+  acState.list = [];
+  acState.selected = 0;
+  const dd = document.getElementById('autocompleteDropdown');
+  if (dd) dd.classList.remove('show');
+}
+
+function saveActive() {
+  if (!state.activeTab) return;
+  const f = state.openFiles.find(x => x.path === state.activeTab);
+  if (!f) return;
+  fetch('/api/file', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({path: f.path, content: f.content})
+  }).then(r=>r.json()).then(d => {
+    if (d.error) showToast('保存失败: '+d.error);
+    else { f.saved = true; renderTabs(); showToast('已保存'); }
+  });
+}
+
+async function saveAll() {
+  if (state.openFiles.length === 0) { showToast('没有需要保存的文件'); return; }
+  let ok = 0;
+  for (const f of state.openFiles) {
+    if (f.saved) continue;
+    const res = await fetch('/api/file', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({path: f.path, content: f.content})
+    });
+    const d = await res.json();
+    if (!d.error) { f.saved = true; ok++; }
+  }
+  renderTabs();
+  showToast(`已保存 ${ok} 个文件`);
+}
+
+function undoEdit() {
+  if (!state.activeTab) return;
+  const f = state.openFiles.find(x => x.path === state.activeTab);
+  if (!f || f.historyIdx <= 0) return;
+  f.historyIdx--;
+  f.content = f.history[f.historyIdx];
+  const ta = document.getElementById('codeArea');
+  if (ta) { ta.value = f.content; updateLineNums(); }
+}
+
+function saveAs() {
+  if (!state.activeTab) { showToast('请先打开文件'); return; }
+  const f = state.openFiles.find(x => x.path === state.activeTab);
+  showDialog('另存为', `<input id="saPath" placeholder="新路径，如: subfolder/newname.py" value="${f.path}">`, () => {
+    const target = document.getElementById('saPath').value.trim();
+    if (!target) return;
+    fetch('/api/file/saveas', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({source: f.path, target, content: f.content})
+    }).then(r=>r.json()).then(d => {
+      if (d.error) showToast(d.error);
+      else { showToast('已另存为: ' + target); refreshFiles(); }
+    });
+  }, {confirmText:'保存'});
+}
+
+// ========== 新建菜单 ==========
+function showNewMenu(e) {
+  document.querySelectorAll('.menu').forEach(m=>m.remove());
+  const menu = document.createElement('div');
+  menu.className = 'menu';
+  const rect = e.target.getBoundingClientRect();
+  menu.style.left = rect.left + 'px';
+  menu.style.top = (rect.bottom + 4) + 'px';
+  const items = [
+    {icon:'create_new_folder', label:'新建文件夹', fn:()=>newFolder()},
+    {icon:'note_add', label:'新建文件', fn:()=>newFile()},
+    {icon:'upload_file', label:'导入文件', fn:()=>importFile()},
+  ];
+  items.forEach(it => {
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    div.innerHTML = `<span class="material-symbols-rounded">${it.icon}</span><span>${it.label}</span>`;
+    div.onclick = () => { menu.remove(); it.fn(); };
+    menu.appendChild(div);
+  });
+  document.body.appendChild(menu);
+  setTimeout(()=>document.addEventListener('click', ()=>menu.remove(), {once:true}), 0);
+}
+
+function newFolder() {
+  showDialog('新建文件夹', `<input id="nfName" placeholder="文件夹名">`, () => {
+    const name = document.getElementById('nfName').value.trim();
+    if (!name) return;
+    fetch('/api/folder/new', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({path: name})
+    }).then(r=>r.json()).then(d => {
+      if (d.error) showToast(d.error);
+      else { showToast('文件夹已创建'); refreshFiles(); }
+    });
+  }, {desc:'在工作区根目录创建'});
+}
+
+function newFile() {
+  showDialog('新建文件', `
+    <input id="nftName" placeholder="文件名（含后缀），如: hello.py">
+    <p style="font-size:12px;color:var(--on-surface-variant);margin-top:-4px;">支持自定义后缀</p>
+  `, () => {
+    const name = document.getElementById('nftName').value.trim();
+    if (!name) return;
+    fetch('/api/file/new', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({path: name})
+    }).then(r=>r.json()).then(d => {
+      if (d.error) showToast(d.error);
+      else { showToast('文件已创建'); refreshFiles(); openFile(name); }
+    });
+  });
+}
+
+function newFileInFolder(folder) {
+  showDialog('新建文件', `<input id="nfiName" placeholder="文件名（含后缀）">`, () => {
+    const name = document.getElementById('nfiName').value.trim();
+    if (!name) return;
+    const path = folder ? folder + '/' + name : name;
+    fetch('/api/file/new', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({path})
+    }).then(r=>r.json()).then(d => {
+      if (d.error) showToast(d.error);
+      else { showToast('文件已创建'); refreshFiles(); openFile(path); }
+    });
+  });
+}
+
+function newFolderInFolder(folder) {
+  showDialog('新建文件夹', `<input id="nfiFolder" placeholder="文件夹名">`, () => {
+    const name = document.getElementById('nfiFolder').value.trim();
+    if (!name) return;
+    const path = folder ? folder + '/' + name : name;
+    fetch('/api/folder/new', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({path})
+    }).then(r=>r.json()).then(d => {
+      if (d.error) showToast(d.error);
+      else { showToast('文件夹已创建'); refreshFiles(); }
+    });
+  });
+}
+
+function importFile() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.multiple = true;
+  input.onchange = async (e) => {
+    for (const file of e.target.files) {
+      const text = await file.text();
+      const res = await fetch('/api/file/new', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({path: file.name})
+      });
+      const d = await res.json();
+      if (d.error) {
+        // 已存在，写入
+        await fetch('/api/file', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({path: file.name, content: text})
+        });
+      } else {
+        await fetch('/api/file', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({path: file.name, content: text})
+        });
+      }
+    }
+    showToast('导入完成');
+    refreshFiles();
+  };
+  input.click();
+}
+
+async function deleteFile(node) {
+  if (state.settings.confirmDelete && !confirm(`确定删除 "${node.name}" 吗？`)) return;
+  const res = await fetch('/api/file/delete', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({path: node.path})
+  });
+  const d = await res.json();
+  if (d.error) showToast(d.error);
+  else { showToast('已删除'); refreshFiles(); }
+}
+
+function renameFile(node) {
+  showDialog('重命名', `<input id="rnName" value="${node.name}">`, () => {
+    const name = document.getElementById('rnName').value.trim();
+    if (!name || name === node.name) return;
+    const path = node.path.split('/');
+    path[path.length-1] = name;
+    const newPath = path.join('/');
+    // 读取旧内容写入新路径，删除旧文件
+    fetch('/api/file?path='+encodeURIComponent(node.path)).then(r=>r.json()).then(d => {
+      fetch('/api/file/new', {method:'POST',headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({path:newPath})}).then(()=>{
+        fetch('/api/file', {method:'POST',headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({path:newPath,content:d.content})}).then(()=>{
+          fetch('/api/file/delete', {method:'POST',headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({path:node.path})}).then(()=>{
+            showToast('已重命名'); refreshFiles();
+          });
+        });
+      });
+    });
+  });
+}
+
+// ========== 收藏 ==========
+function toggleFavorite() {
+  if (!state.activeTab) return;
+  const idx = state.favorites.indexOf(state.activeTab);
+  if (idx >= 0) state.favorites.splice(idx, 1);
+  else state.favorites.push(state.activeTab);
+  localStorage.setItem('codexa_favs', JSON.stringify(state.favorites));
+  document.getElementById('favIcon').textContent = idx >= 0 ? 'favorite_border' : 'favorite';
+  showToast(idx >= 0 ? '已取消收藏' : '已收藏');
+}
+
+// ========== 运行代码 ==========
+async function runCode(force=false) {
+  if (!state.activeTab) { showToast('请先打开文件'); return; }
+  const f = state.openFiles.find(x => x.path === state.activeTab);
+  if (!f) return;
+
+  // 先保存
+  await fetch('/api/file', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({path: f.path, content: f.content})
+  });
+  f.saved = true;
+  renderTabs();
+
+  goScreen(3, 'slide-up');
+
+  const ext = '.' + (f.path.split('.').pop() || '').toLowerCase();
+  const out = document.getElementById('runOutput');
+  const placeholder = document.getElementById('runPlaceholder');
+  const frame = document.getElementById('runFrame');
+
+  // 检查语言
+  out.innerHTML = `正在检查语言环境...\n`;
+  const langRes = await fetch('/api/languages?ext=' + ext);
+  const langData = await langRes.json();
+
+  if (ext === '.html' || ext === '.htm') {
+    // HTML 直接在 iframe 中运行
+    placeholder.style.display = 'none';
+    frame.style.display = 'block';
+    frame.srcdoc = f.content;
+    out.innerHTML = `HTML 预览已加载\n文件: ${f.path}`;
+    return;
+  }
+
+  if (!langData.installed && langData.info.includes('未安装')) {
+    out.innerHTML += `<span class="error">错误: ${langData.info}\n请先安装该语言后再运行。</span>`;
+    return;
+  }
+  out.innerHTML += `检测到: ${langData.info}\n正在运行...\n\n`;
+
+  try {
+    const res = await fetch('/api/run', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({path: f.path})
+    });
+    const data = await res.json();
+    if (data.error) {
+      out.innerHTML += `<span class="error">${data.error}</span>`;
+    } else {
+      const cls = data.exit_code === 0 ? 'success' : 'error';
+      out.innerHTML += `<span class="${cls}">${data.output || '(无输出)'}</span>\n\n退出码: ${data.exit_code}`;
+    }
+  } catch(e) {
+    out.innerHTML += `<span class="error">运行异常: ${e.message}</span>`;
+  }
+}
+
+function stopRun() {
+  document.getElementById('runOutput').innerHTML += '\n\n[运行已停止]';
+  showToast('已停止');
+}
+
+function toggleRunFullscreen() {
+  const el = document.getElementById('runDisplay');
+  if (!el) return;
+  if (!document.fullscreenElement) {
+    el.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+function clearOutput() {
+  document.getElementById('runOutput').innerHTML = '等待运行...';
+  document.getElementById('runFrame').style.display = 'none';
+  document.getElementById('runPlaceholder').style.display = 'flex';
+}
+
+// ========== 设置 ==========
+const SETTINGS_ITEMS = [
+  {id:'general', icon:'tune', title:'通用设置', subtitle:'自动保存、字体大小等'},
+  {id:'editor', icon:'edit', title:'编辑器', subtitle:'制表符、换行、行号'},
+  {id:'run', icon:'play_circle', title:'运行环境', subtitle:'超时、自动运行'},
+  {id:'appearance', icon:'palette', title:'外观', subtitle:'主题、配色'},
+  {id:'language', icon:'language', title:'语言支持', subtitle:'检测已安装的语言'},
+  {id:'workspace', icon:'folder', title:'工作区', subtitle:'工作目录路径'},
+  {id:'keyboard', icon:'keyboard', title:'快捷键', subtitle:'键盘快捷操作'},
+  {id:'about', icon:'info', title:'关于', subtitle:'版本信息'},
+  {id:'data', icon:'storage', title:'数据管理', subtitle:'日志与缓存清理'},
+];
+
+function renderSettings() {
+  const list = document.getElementById('settingsList');
+  list.innerHTML = '';
+  SETTINGS_ITEMS.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'settings-item';
+    div.innerHTML = `
+      <div class="icon-circle"><span class="material-symbols-rounded">${item.icon}</span></div>
+      <div class="text">
+        <div class="title">${item.title}</div>
+        <div class="subtitle">${item.subtitle}</div>
+      </div>
+      <span class="material-symbols-rounded chevron">chevron_right</span>
+    `;
+    div.onclick = () => {
+      document.querySelectorAll('.settings-item').forEach(x=>x.classList.remove('active'));
+      div.classList.add('active');
+      renderSettingDetail(item.id);
+    };
+    if (i === 0) div.classList.add('active');
+    list.appendChild(div);
+  });
+  renderSettingDetail('general');
+}
+
+function renderSettingDetail(id) {
+  const detail = document.getElementById('settingsDetail');
+  const s = state.settings;
+  let html = '';
+  switch(id) {
+    case 'general':
+      html = `
+        <h2>通用设置</h2>
+        <p class="desc">配置应用的基础行为</p>
+        <div class="setting-row">
+          <div><div class="label">自动保存</div><div class="hint">编辑时实时保存文件到磁盘</div></div>
+          <div class="switch ${s.autoSave?'on':''}" onclick="toggleSetting('autoSave')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">删除前确认</div><div class="hint">删除文件时弹出确认对话框</div></div>
+          <div class="switch ${s.confirmDelete?'on':''}" onclick="toggleSetting('confirmDelete')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">自动备份</div><div class="hint">保存前自动创建 .bak 备份文件</div></div>
+          <div class="switch ${s.autoBackup?'on':''}" onclick="toggleSetting('autoBackup')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">启动时检查更新</div><div class="hint">应用启动后自动检查新版本</div></div>
+          <div class="switch ${s.checkUpdateOnStart?'on':''}" onclick="toggleSetting('checkUpdateOnStart')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">窗口置顶</div><div class="hint">窗口始终显示在其他窗口上方</div></div>
+          <div class="switch ${s.windowOnTop?'on':''}" onclick="toggleSetting('windowOnTop')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">最大最近文件数</div><div class="hint">保留 ${s.maxRecentFiles} 个最近打开记录</div></div>
+          <input type="range" min="5" max="50" value="${s.maxRecentFiles}" onchange="changeSetting('maxRecentFiles',this.value)" style="width:120px;">
+        </div>
+      `;
+      break;
+    case 'editor':
+      html = `
+        <h2>编辑器</h2>
+        <p class="desc">调整代码编辑体验</p>
+        <div class="setting-row">
+          <div><div class="label">字体大小</div><div class="hint">当前: ${s.font}px</div></div>
+          <input type="range" min="10" max="24" value="${s.font}" onchange="changeSetting('font',this.value)" style="width:120px;">
+        </div>
+        <div class="setting-row">
+          <div><div class="label">行高</div><div class="hint">当前: ${s.lineHeight}</div></div>
+          <input type="range" min="1.0" max="2.5" step="0.1" value="${s.lineHeight}" onchange="changeSetting('lineHeight',this.value)" style="width:120px;">
+        </div>
+        <div class="setting-row">
+          <div><div class="label">制表符大小</div><div class="hint">一个 Tab 等于 ${s.tabSize} 个空格</div></div>
+          <input type="range" min="2" max="8" value="${s.tabSize}" onchange="changeSetting('tabSize',this.value)" style="width:120px;">
+        </div>
+        <div class="setting-row">
+          <div><div class="label">显示行号</div><div class="hint">在编辑器左侧显示行号</div></div>
+          <div class="switch ${s.showLineNums?'on':''}" onclick="toggleSetting('showLineNums')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">自动换行</div><div class="hint">长行自动折行显示</div></div>
+          <div class="switch ${s.wordWrap?'on':''}" onclick="toggleSetting('wordWrap')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">自动缩进</div><div class="hint">新行自动继承上一行的缩进</div></div>
+          <div class="switch ${s.autoIndent?'on':''}" onclick="toggleSetting('autoIndent')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">缩进参考线</div><div class="hint">显示垂直缩进对齐线</div></div>
+          <div class="switch ${s.indentGuide?'on':''}" onclick="toggleSetting('indentGuide')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">括号匹配高亮</div><div class="hint">光标在括号旁时高亮匹配的另一半</div></div>
+          <div class="switch ${s.bracketMatch?'on':''}" onclick="toggleSetting('bracketMatch')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">当前行高亮</div><div class="hint">高亮显示光标所在行</div></div>
+          <div class="switch ${s.highlightLine?'on':''}" onclick="toggleSetting('highlightLine')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">光标闪烁</div><div class="hint">光标是否闪烁显示</div></div>
+          <div class="switch ${s.cursorBlink?'on':''}" onclick="toggleSetting('cursorBlink')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">小地图</div><div class="hint">在编辑器右侧显示代码缩略图</div></div>
+          <div class="switch ${s.minimap?'on':''}" onclick="toggleSetting('minimap')"><div class="thumb"></div></div>
+        </div>
+      `;
+      break;
+    case 'run':
+      html = `
+        <h2>运行环境</h2>
+        <p class="desc">代码运行相关配置</p>
+        <div class="setting-row">
+          <div><div class="label">运行超时</div><div class="hint">${s.runTimeout} 秒后强制终止</div></div>
+          <input type="range" min="5" max="120" value="${s.runTimeout}" onchange="changeSetting('runTimeout',this.value)" style="width:120px;">
+        </div>
+        <div class="setting-row">
+          <div><div class="label">打开文件后自动运行</div><div class="hint">切换到运行屏幕时自动执行代码</div></div>
+          <div class="switch ${s.autoRun?'on':''}" onclick="toggleSetting('autoRun')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">默认语言</div><div class="hint">新建文件的默认语言</div></div>
+          <select onchange="changeSetting('defaultLang',this.value)" style="padding:8px 12px;border:1px solid var(--outline);border-radius:8px;background:var(--surface);">
+            <option value="python" ${s.defaultLang==='python'?'selected':''}>Python</option>
+            <option value="javascript" ${s.defaultLang==='javascript'?'selected':''}>JavaScript</option>
+            <option value="html" ${s.defaultLang==='html'?'selected':''}>HTML</option>
+            <option value="text" ${s.defaultLang==='text'?'selected':''}>文本</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">Python 路径</div><div class="hint">自定义 python 可执行文件路径</div></div>
+          <input type="text" value="${s.pythonPath}" placeholder="留空使用系统默认" onchange="changeSetting('pythonPath',this.value)" style="width:200px;padding:8px 12px;border:1px solid var(--outline);border-radius:8px;background:var(--surface);">
+        </div>
+        <div class="setting-row">
+          <div><div class="label">Node.js 路径</div><div class="hint">自定义 node 可执行文件路径</div></div>
+          <input type="text" value="${s.nodePath}" placeholder="留空使用系统默认" onchange="changeSetting('nodePath',this.value)" style="width:200px;padding:8px 12px;border:1px solid var(--outline);border-radius:8px;background:var(--surface);">
+        </div>
+      `;
+      break;
+    case 'appearance':
+      html = `
+        <h2>外观</h2>
+        <p class="desc">界面外观设置</p>
+        <div class="setting-row">
+          <div><div class="label">主题模式</div><div class="hint">浅色模式（仅支持浅色）</div></div>
+          <span style="color:var(--on-surface-variant);">浅色</span>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">配色方案</div><div class="hint">Material 3 Purple</div></div>
+          <span style="color:var(--primary);font-weight:500;">Purple</span>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">圆角风格</div><div class="hint">M3 Expressive 默认圆角</div></div>
+          <span style="color:var(--on-surface-variant);">标准</span>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">动效方案</div><div class="hint">MotionScheme.standard() 平滑过渡</div></div>
+          <span style="color:var(--on-surface-variant);">标准</span>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">字体族</div><div class="hint">Roboto + Roboto Mono</div></div>
+          <span style="color:var(--on-surface-variant);">Roboto</span>
+        </div>
+      `;
+      break;
+    case 'language':
+      html = `<h2>语言支持</h2><p class="desc">检测系统中已安装的编程语言</p><div id="langList"><div class="hint">正在检测...</div></div>`;
+      detail.innerHTML = html;
+      fetch('/api/languages').then(r=>r.json()).then(data => {
+        let list = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">';
+        for (const [ext, info] of Object.entries(data)) {
+          const icon = info.installed ? 'check_circle' : 'cancel';
+          const color = info.installed ? 'var(--primary)' : 'var(--error)';
+          list += `<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--surface-container-low);border-radius:12px;">
+            <span class="material-symbols-rounded" style="color:${color};font-size:20px;">${icon}</span>
+            <div><div style="font-size:13px;">${ext}</div><div style="font-size:11px;color:var(--on-surface-variant);">${info.info}</div></div>
+          </div>`;
+        }
+        list += '</div>';
+        document.getElementById('langList').innerHTML = list;
+      });
+      return;
+    case 'workspace':
+      html = `
+        <h2>工作区</h2>
+        <p class="desc">当前工作目录与文件管理</p>
+        <div class="setting-row">
+          <div><div class="label">工作区路径</div><div class="hint">所有文件操作的根目录</div></div>
+        </div>
+        <div id="wsPath" style="font-family:monospace;background:var(--surface-container-low);padding:12px;border-radius:12px;margin-bottom:16px;"></div>
+        <div class="setting-row">
+          <div><div class="label">文件编码</div><div class="hint">读写文件的默认字符编码</div></div>
+          <select onchange="changeSetting('encoding',this.value)" style="padding:8px 12px;border:1px solid var(--outline);border-radius:8px;background:var(--surface);">
+            <option value="UTF-8" ${s.encoding==='UTF-8'?'selected':''}>UTF-8</option>
+            <option value="GBK" ${s.encoding==='GBK'?'selected':''}>GBK</option>
+            <option value="GB2312" ${s.encoding==='GB2312'?'selected':''}>GB2312</option>
+            <option value="BIG5" ${s.encoding==='BIG5'?'selected':''}>BIG5</option>
+            <option value="Latin-1" ${s.encoding==='Latin-1'?'selected':''}>Latin-1</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">显示隐藏文件</div><div class="hint">在文件树中显示以 . 开头的文件</div></div>
+          <div class="switch ${s.showHidden!==false?'on':''}" onclick="toggleSetting('showHidden')"><div class="thumb"></div></div>
+        </div>
+      `;
+      detail.innerHTML = html;
+      fetch('/api/workspace').then(r=>r.json()).then(d=>{
+        document.getElementById('wsPath').textContent = d.path;
+      });
+      return;
+    case 'keyboard':
+      html = `
+        <h2>快捷键</h2>
+        <p class="desc">键盘快捷操作一览</p>
+        ${[['Ctrl+S','保存当前文件'],['Ctrl+Z','撤销上一步'],['Ctrl+Shift+S','另存为'],['Tab','插入制表符'],['Ctrl+F','查找'],['Ctrl+H','替换'],['Ctrl+/','注释/取消注释'],['Ctrl+D','复制当前行'],['Ctrl+X','剪切当前行'],['双击文件','打开文件'],['右键文件','更多操作'],['Ctrl+Enter','运行代码']].map(([k,v])=>`
+          <div class="setting-row"><div class="label">${v}</div><code style="background:var(--surface-container);padding:4px 10px;border-radius:6px;">${k}</code></div>
+        `).join('')}
+      `;
+      break;
+    case 'about':
+      html = `
+        <h2>关于 Codexa</h2>
+        <p class="desc">一款轻量级本地代码编辑器</p>
+        <div class="setting-row"><div class="label">版本</div><span>1.0.0</span></div>
+        <div class="setting-row"><div class="label">引擎</div><span>Flask + PyWebView</span></div>
+        <div class="setting-row"><div class="label">设计</div><span>Material 3 Purple</span></div>
+        <div class="setting-row"><div class="label">字体</div><span>Roboto / Roboto Mono</span></div>
+        <div class="setting-row"><div class="label">图标</div><span>Material Symbols Rounded</span></div>
+        <div class="setting-row"><div class="label">运行环境</div><span>Python 3.12 + WebView2</span></div>
+        <div class="setting-row"><div class="label">许可证</div><span>MIT License</span></div>
+        <div class="setting-row"><div class="label">开发者</div><span>Codexa Team</span></div>
+        <div style="margin-top:24px;padding:16px;background:var(--surface-container-low);border-radius:16px;">
+          <div style="font-size:13px;color:var(--on-surface-variant);line-height:1.6;">Codexa 是一款基于 Material 3 设计语言的本地代码编辑器，支持多种编程语言的编辑与一键运行，提供文件管理、日志追踪等功能。所有数据保存在本地，不依赖云端服务。</div>
+        </div>
+      `;
+      break;
+    case 'data':
+      html = `
+        <h2>数据管理</h2>
+        <p class="desc">清理与管理应用数据</p>
+        <div class="setting-row">
+          <div><div class="label">清空日志</div><div class="hint">删除所有运行日志记录</div></div>
+          <button class="btn btn-outline" onclick="clearLogs();showToast('日志已清空')">清空</button>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">最大日志条数</div><div class="hint">超过 ${s.maxLogCount} 条自动删除最旧的记录</div></div>
+          <input type="range" min="100" max="5000" step="100" value="${s.maxLogCount}" onchange="changeSetting('maxLogCount',this.value)" style="width:120px;">
+        </div>
+        <div class="setting-row">
+          <div><div class="label">发送匿名遥测</div><div class="hint">帮助改善产品（不发送代码内容）</div></div>
+          <div class="switch ${s.telemetry?'on':''}" onclick="toggleSetting('telemetry')"><div class="thumb"></div></div>
+        </div>
+        <div class="setting-row">
+          <div><div class="label">清除浏览器缓存</div><div class="hint">清除设置和收藏数据</div></div>
+          <button class="btn btn-outline" onclick="if(confirm('确定清除所有本地数据？')){localStorage.clear();showToast('已清除，即将刷新');setTimeout(()=>location.reload(),1000)}">清除</button>
+        </div>
+      `;
+      break;
+  }
+  detail.innerHTML = html;
+}
+
+function toggleSetting(key) {
+  state.settings[key] = !state.settings[key];
+  localStorage.setItem('codexa_settings', JSON.stringify(state.settings));
+  renderSettingDetail(SETTINGS_ITEMS.find(i=>true)?.id || 'general');
+  // 重新渲染当前详情
+  const active = document.querySelector('.settings-item.active');
+  if (active) {
+    const idx = Array.from(document.querySelectorAll('.settings-item')).indexOf(active);
+    renderSettingDetail(SETTINGS_ITEMS[idx].id);
+  }
+}
+function changeSetting(key, val) {
+  state.settings[key] = parseInt(val) || val;
+  localStorage.setItem('codexa_settings', JSON.stringify(state.settings));
+  if (key === 'font') {
+    const ta = document.getElementById('codeArea');
+    if (ta) ta.style.fontSize = val + 'px';
+  }
+}
+
+// ========== 日志 ==========
+async function loadLogs() {
+  const params = new URLSearchParams();
+  if (state.currentLogFilter) params.set('level', state.currentLogFilter);
+  if (state.currentLogDate) params.set('date', state.currentLogDate);
+  const res = await fetch('/api/logs?' + params.toString());
+  const logs = await res.json();
+  const list = document.getElementById('logList');
+  if (logs.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:48px;color:var(--on-surface-variant);">暂无日志</div>';
+    return;
+  }
+  list.innerHTML = logs.slice().reverse().map(l => `
+    <div class="log-item">
+      <div class="log-head">
+        <span class="log-level ${l.level}">${l.level.toUpperCase()}</span>
+        <span class="log-time">${l.time}</span>
+      </div>
+      <div class="log-msg">${l.message}</div>
+    </div>
+  `).join('');
+}
+
+function filterLogs(btn, level) {
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  state.currentLogFilter = level;
+  loadLogs();
+}
+
+async function clearLogs() {
+  await fetch('/api/logs/clear', {method:'POST'});
+  loadLogs();
+  showToast('日志已清空');
+}
+
+// ========== 时间选择器 ==========
+function selectTpBlock(block) {
+  state.tpMode = block;
+  document.getElementById('tpHour').classList.toggle('selected', block==='hour');
+  document.getElementById('tpMinute').classList.toggle('selected', block==='minute');
+  document.getElementById('tpInput').value = block==='hour' ? String(state.tpHour).padStart(2,'0') : String(state.tpMinute).padStart(2,'0');
+}
+function setAMPM(v) {
+  state.tpAMPM = v;
+  document.getElementById('tpAM').classList.toggle('active', v==='AM');
+  document.getElementById('tpPM').classList.toggle('active', v==='PM');
+}
+function onTpInput() {
+  const v = parseInt(document.getElementById('tpInput').value) || 0;
+  if (state.tpMode === 'hour') {
+    state.tpHour = Math.min(12, Math.max(1, v));
+    document.getElementById('tpHourVal').textContent = String(state.tpHour).padStart(2,'0');
+  } else {
+    state.tpMinute = Math.min(59, Math.max(0, v));
+    document.getElementById('tpMinuteVal').textContent = String(state.tpMinute).padStart(2,'0');
+  }
+}
+function toggleTpMode() { showToast('键盘输入模式'); }
+function cancelTime() { selectTpBlock('hour'); }
+function confirmTime() {
+  const h24 = state.tpAMPM === 'PM' ? (state.tpHour % 12) + 12 : state.tpHour % 12;
+  showToast(`时间: ${String(h24).padStart(2,'0')}:${String(state.tpMinute).padStart(2,'0')}`);
+}
+
+// ========== 日期选择器 ==========
+function renderDatePicker() {
+  const year = state.dpYear, month = state.dpMonth;
+  document.getElementById('dpMonth').textContent = `${year}年${month+1}月`;
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const daysPrev = new Date(year, month, 0).getDate();
+  const grid = document.getElementById('dpGrid');
+  grid.innerHTML = '';
+  // 上月
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const d = document.createElement('div');
+    d.className = 'dp-day other';
+    d.textContent = daysPrev - i;
+    grid.appendChild(d);
+  }
+  // 当月
+  for (let d = 1; d <= daysInMonth; d++) {
+    const el = document.createElement('div');
+    el.className = 'dp-day';
+    el.textContent = d;
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if (dateStr === state.dpToday) el.classList.add('today');
+    if (dateStr === state.dpSelected) el.classList.add('selected');
+    el.onclick = () => { state.dpSelected = dateStr; renderDatePicker(); };
+    grid.appendChild(el);
+  }
+  // 下月
+  const total = firstDay + daysInMonth;
+  const nextDays = (7 - total % 7) % 7;
+  for (let d = 1; d <= nextDays; d++) {
+    const el = document.createElement('div');
+    el.className = 'dp-day other';
+    el.textContent = d;
+    grid.appendChild(el);
+  }
+  const [y,m,dd] = state.dpSelected.split('-');
+  document.getElementById('dpDate').textContent = `${y}年${parseInt(m)}月${parseInt(dd)}日`;
+}
+function dpPrevMonth() {
+  state.dpMonth--;
+  if (state.dpMonth < 0) { state.dpMonth = 11; state.dpYear--; }
+  renderDatePicker();
+}
+function dpNextMonth() {
+  state.dpMonth++;
+  if (state.dpMonth > 11) { state.dpMonth = 0; state.dpYear++; }
+  renderDatePicker();
+}
+function closeDatePicker() { document.getElementById('datePicker').style.display='none'; }
+function confirmDate() {
+  state.currentLogDate = state.dpSelected;
+  closeDatePicker();
+  loadLogs();
+  showToast('已筛选日期: ' + state.dpSelected);
+}
+
+function searchLogs() {
+  document.getElementById('datePicker').style.display = 'block';
+  renderDatePicker();
+}
+
+// ========== 初始化 ==========
+window.addEventListener('DOMContentLoaded', () => {
+  refreshFiles();
+  // 时间选择器初始化
+  const now = new Date();
+  state.tpHour = now.getHours() % 12 || 12;
+  state.tpMinute = now.getMinutes();
+  state.tpAMPM = now.getHours() < 12 ? 'AM' : 'PM';
+  document.getElementById('tpHourVal').textContent = String(state.tpHour).padStart(2,'0');
+  document.getElementById('tpMinuteVal').textContent = String(state.tpMinute).padStart(2,'0');
+  setAMPM(state.tpAMPM);
+  // AI 初始化
+  renderAIConversations();
+  // AI 输入框 Enter 发送
+  document.getElementById('aiInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendAIMessage();
+    }
+  });
+  // AI 搜索
+  document.getElementById('aiSearchInput').addEventListener('input', () => {
+    renderAIConversations();
+  });
+});
+
+// ========== AI 对话 ==========
+const AI_STORAGE_KEY = 'codexa_ai_conversations';
+const AI_DRAFT_KEY = 'codexa_ai_draft';
+state.aiConversations = JSON.parse(localStorage.getItem(AI_STORAGE_KEY) || '[]');
+state.aiActiveId = null;
+state.aiLoading = false;
+
+function saveAIConversations() {
+  localStorage.setItem(AI_STORAGE_KEY, JSON.stringify(state.aiConversations));
+}
+
+function newAIChat() {
+  const conv = { id: Date.now().toString(), title: '新对话', messages: [], model: 'deepseek-r1:8b', createdAt: Date.now() };
+  state.aiConversations.unshift(conv);
+  state.aiActiveId = conv.id;
+  saveAIConversations();
+  renderAIConversations();
+  renderAIChat();
+  document.getElementById('aiInput').focus();
+}
+
+function deleteAIChat(id, ev) {
+  if (ev) ev.stopPropagation();
+  state.aiConversations = state.aiConversations.filter(c => c.id !== id);
+  if (state.aiActiveId === id) state.aiActiveId = null;
+  saveAIConversations();
+  renderAIConversations();
+  renderAIChat();
+}
+
+function selectAIChat(id) {
+  state.aiActiveId = id;
+  const conv = state.aiConversations.find(c => c.id === id);
+  if (conv) document.getElementById('aiModelSelect').value = conv.model || 'deepseek-r1:8b';
+  renderAIConversations();
+  renderAIChat();
+}
+
+function renderAIConversations() {
+  const list = document.getElementById('aiConversationList');
+  if (!list) return;
+  const search = (document.getElementById('aiSearchInput')?.value || '').toLowerCase();
+  const filtered = state.aiConversations.filter(c => c.title.toLowerCase().includes(search));
+  list.innerHTML = '';
+  if (filtered.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--on-surface-variant);padding:20px;font-size:13px;">暂无对话</div>';
+    return;
+  }
+  for (const conv of filtered) {
+    const div = document.createElement('div');
+    div.className = 'ai-conv-item' + (conv.id === state.aiActiveId ? ' active' : '');
+    div.onclick = () => selectAIChat(conv.id);
+    const preview = conv.messages.length > 0 ? conv.messages[0].content.substring(0, 30) : conv.title;
+    div.innerHTML = `
+      <span class="material-symbols-rounded">chat_bubble</span>
+      <span class="ai-conv-text">${preview}</span>
+      <span class="material-symbols-rounded ai-conv-del" onclick="deleteAIChat('${conv.id}', event)">close</span>
+    `;
+    list.appendChild(div);
+  }
+}
+
+function renderAIChat() {
+  const area = document.getElementById('aiChatArea');
+  if (!area) return;
+  const conv = state.aiConversations.find(c => c.id === state.aiActiveId);
+  if (!conv || conv.messages.length === 0) {
+    area.innerHTML = '<div class="ai-empty-state"><span class="material-symbols-rounded" style="font-size:64px;opacity:0.3;">smart_toy</span><span style="margin-top:12px;">开始与 AI 对话</span></div>';
+    return;
+  }
+  area.innerHTML = '';
+  for (const msg of conv.messages) {
+    const div = document.createElement('div');
+    div.className = 'ai-msg ai-msg-' + msg.role;
+    div.textContent = msg.content;
+    area.appendChild(div);
+  }
+  area.scrollTop = area.scrollHeight;
+}
+
+async function sendAIMessage() {
+  if (state.aiLoading) return;
+  const input = document.getElementById('aiInput');
+  const text = input.value.trim();
+  if (!text) return;
+  // 确保有对话
+  if (!state.aiActiveId) newAIChat();
+  const conv = state.aiConversations.find(c => c.id === state.aiActiveId);
+  if (!conv) return;
+  const model = document.getElementById('aiModelSelect').value;
+  conv.model = model;
+  // 添加用户消息
+  conv.messages.push({ role: 'user', content: text, time: Date.now() });
+  if (conv.messages.length === 1) conv.title = text.substring(0, 30);
+  input.value = '';
+  input.style.height = 'auto';
+  saveAIConversations();
+  renderAIConversations();
+  renderAIChat();
+  state.aiLoading = true;
+  // 显示加载提示
+  const area = document.getElementById('aiChatArea');
+  const loadingDiv = document.createElement('div');
+  loadingDiv.className = 'ai-msg ai-msg-bot';
+  loadingDiv.textContent = '正在思考...';
+  loadingDiv.id = 'aiLoading';
+  area.appendChild(loadingDiv);
+  area.scrollTop = area.scrollHeight;
+  try {
+    const res = await fetch('/api/ai/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: model,
+        message: text,
+        history: conv.messages.slice(-20, -1).map(m => ({role: m.role === 'user' ? 'user' : 'assistant', content: m.content}))
+      })
+    });
+    const data = await res.json();
+    loadingDiv.remove();
+    if (data.reply) {
+      conv.messages.push({ role: 'assistant', content: data.reply, time: Date.now() });
+    } else if (data.error) {
+      conv.messages.push({ role: 'sys', content: '错误: ' + data.error, time: Date.now() });
+    }
+    saveAIConversations();
+    renderAIChat();
+  } catch(e) {
+    loadingDiv.remove();
+    conv.messages.push({ role: 'sys', content: '请求失败: ' + e.message, time: Date.now() });
+    saveAIConversations();
+    renderAIChat();
+  }
+  state.aiLoading = false;
+}
+
+function toggleAIMenu(ev) {
+  if (ev) ev.stopPropagation();
+  const menu = document.getElementById('aiMenu');
+  const arrow = document.querySelector('.ai-send-arrow');
+  if (menu.style.display === 'none') {
+    menu.style.display = 'block';
+    arrow.classList.add('open');
+  } else {
+    menu.style.display = 'none';
+    arrow.classList.remove('open');
+  }
+}
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('aiMenu');
+  if (menu && menu.style.display !== 'none' && !e.target.closest('.ai-split-btn') && !e.target.closest('.ai-menu')) {
+    menu.style.display = 'none';
+    document.querySelector('.ai-send-arrow')?.classList.remove('open');
+  }
+});
+
+function aiScheduleSend() {
+  document.getElementById('aiMenu').style.display = 'none';
+  document.querySelector('.ai-send-arrow').classList.remove('open');
+  const input = document.getElementById('aiInput');
+  const text = input.value.trim();
+  if (!text) { showToast('请先输入消息'); return; }
+  showDialog('定时发送', '设置发送时间（分钟）', null, () => {
+    const min = parseInt(document.getElementById('dialogInput')?.value || '1');
+    showToast(`${min} 分钟后将自动发送`);
+    setTimeout(() => {
+      if (input.value.trim() === text) sendAIMessage();
+    }, min * 60000);
+  }, true);
+}
+
+function aiSaveDraft() {
+  document.getElementById('aiMenu').style.display = 'none';
+  document.querySelector('.ai-send-arrow').classList.remove('open');
+  const text = document.getElementById('aiInput').value.trim();
+  if (!text) { showToast('输入框为空'); return; }
+  localStorage.setItem(AI_DRAFT_KEY, text);
+  showToast('草稿已保存');
+}
+
+function aiShare() {
+  document.getElementById('aiMenu').style.display = 'none';
+  document.querySelector('.ai-send-arrow').classList.remove('open');
+  const conv = state.aiConversations.find(c => c.id === state.aiActiveId);
+  if (!conv || conv.messages.length === 0) { showToast('暂无对话内容可分享'); return; }
+  const text = conv.messages.map(m => `${m.role === 'user' ? '我' : 'AI'}: ${m.content}`).join('\n\n');
+  navigator.clipboard.writeText(text).then(() => showToast('对话已复制到剪贴板')).catch(() => showToast('复制失败'));
+}
+</script>
+</body>
+</html>
