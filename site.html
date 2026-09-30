@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codexa — 本地代码编辑器</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Rounded" rel="stylesheet">
+<style>
+:root {
+  --primary: #6750A4;
+  --on-primary: #FFFFFF;
+  --primary-container: #EADDFF;
+  --on-primary-container: #21005D;
+  --secondary: #635A75;
+  --secondary-container: #E8DEF8;
+  --on-secondary-container: #1D192B;
+  --tertiary-container: #FFD8E4;
+  --on-tertiary-container: #31111D;
+  --surface: #FEF7FF;
+  --surface-container-low: #F7F2FA;
+  --surface-container: #F3EDF7;
+  --surface-container-high: #ECE6F0;
+  --surface-container-highest: #E6E0E9;
+  --on-surface: #1D1B20;
+  --on-surface-variant: #49454F;
+  --outline: #79747E;
+  --outline-variant: #CAC4D0;
+  --inverse-surface: #322F35;
+  --inverse-on-surface: #F5EFF7;
+  --inverse-primary: #D0BCFF;
+  --error: #B3261E;
+  --on-error: #FFFFFF;
+  --error-container: #F9DEDC;
+  --on-error-container: #410E0B;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Roboto', sans-serif;
+  background: var(--surface);
+  color: var(--on-surface);
+  scroll-behavior: smooth;
+}
+a { text-decoration:none; color:inherit; }
+
+/* 顶部导航 */
+.nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 12px 24px;
+  background: rgba(254, 247, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--outline-variant);
+}
+.nav-logo { display:flex; align-items:center; gap:10px; }
+.nav-logo .material-symbols-rounded { font-size:28px; color:var(--primary); }
+.nav-logo span { font-size:18px; font-weight:500; letter-spacing:0.5px; }
+.nav-links { display:flex; gap:8px; align-items:center; }
+.nav-links a {
+  padding: 8px 16px; border-radius:20px;
+  font-size:14px; color:var(--on-surface-variant);
+  transition: all 0.2s;
+}
+.nav-links a:hover { background:var(--surface-container); color:var(--on-surface); }
+
+/* Hero */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-container-low) 100%);
+}
+.hero-icon {
+  width: 96px; height: 96px;
+  background: var(--primary);
+  border-radius: 28px;
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom: 32px;
+  box-shadow: 0 8px 32px rgba(103, 80, 164, 0.25);
+}
+.hero-icon .material-symbols-rounded { font-size:48px; color:var(--on-primary); }
+.hero h1 {
+  font-size: 56px; font-weight:400; letter-spacing:-1px;
+  margin-bottom: 16px; color:var(--on-surface);
+}
+.hero .tagline {
+  font-size: 20px; color:var(--on-surface-variant);
+  max-width: 560px; line-height:1.6; margin-bottom:40px;
+}
+.hero-buttons { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+.btn-filled {
+  padding: 14px 32px; border-radius:28px; border:none;
+  background: var(--primary); color: var(--on-primary);
+  font-size:15px; font-weight:500; cursor:pointer;
+  display:inline-flex; align-items:center; gap:8px;
+  transition: all 0.2s;
+}
+.btn-filled:hover { box-shadow: 0 4px 16px rgba(103,80,164,0.3); transform: translateY(-1px); }
+.btn-tonal {
+  padding: 14px 32px; border-radius:28px; border:none;
+  background: var(--secondary-container); color: var(--on-secondary-container);
+  font-size:15px; font-weight:500; cursor:pointer;
+  display:inline-flex; align-items:center; gap:8px;
+  transition: all 0.2s;
+}
+.btn-tonal:hover { box-shadow: 0 4px 16px rgba(99,90,117,0.2); transform: translateY(-1px); }
+
+/* 通用 section */
+.section { padding: 80px 24px; max-width: 1200px; margin: 0 auto; }
+.section-title { font-size:32px; font-weight:400; text-align:center; margin-bottom:8px; }
+.section-desc { text-align:center; color:var(--on-surface-variant); font-size:16px; margin-bottom:48px; }
+
+/* 功能卡片 */
+.features-grid {
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;
+}
+.feature-card {
+  background: var(--surface-container-low);
+  border-radius: 20px;
+  padding: 28px;
+  transition: all 0.2s;
+}
+.feature-card:hover { box-shadow: 0 2px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+.feature-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: var(--primary-container);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom: 16px;
+}
+.feature-icon .material-symbols-rounded { font-size:24px; color:var(--on-primary-container); }
+.feature-card h3 { font-size:18px; font-weight:500; margin-bottom:8px; }
+.feature-card p { font-size:14px; color:var(--on-surface-variant); line-height:1.6; }
+
+/* 截图预览 */
+.preview-grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+.preview-card {
+  background: var(--surface-container-high);
+  border-radius: 20px; overflow:hidden;
+  aspect-ratio: 16/10;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+}
+.preview-card .material-symbols-rounded { font-size:64px; color:var(--outline); }
+.preview-card .label {
+  position:absolute; bottom:16px; left:16px;
+  font-size:14px; font-weight:500;
+  background: var(--surface); padding: 6px 14px; border-radius: 16px;
+}
+
+/* 下载区 */
+.download-section {
+  background: var(--surface-container-low);
+  border-radius: 28px;
+  padding: 48px;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 800px;
+}
+.download-section h2 { font-size:28px; font-weight:400; margin-bottom:12px; }
+.download-section p { color:var(--on-surface-variant); margin-bottom:32px; }
+.download-info {
+  display:inline-flex; align-items:center; gap:8px;
+  padding: 8px 16px; border-radius:20px;
+  background: var(--surface-container); color:var(--on-surface-variant);
+  font-size:13px; margin-bottom:24px;
+}
+
+/* 反馈表单 */
+.feedback-section {
+  max-width: 600px; margin: 0 auto;
+  background: var(--surface-container-low);
+  border-radius: 28px; padding: 48px;
+}
+.feedback-section h2 { font-size:28px; font-weight:400; text-align:center; margin-bottom:8px; }
+.feedback-section .desc { text-align:center; color:var(--on-surface-variant); margin-bottom:32px; }
+.form-field { margin-bottom:16px; }
+.form-field label { display:block; font-size:13px; color:var(--on-surface-variant); margin-bottom:6px; }
+.form-field input, .form-field textarea, .form-field select {
+  width:100%; padding: 12px 16px;
+  border: 1px solid var(--outline); border-radius: 12px;
+  background: var(--surface); font-family:'Roboto',sans-serif; font-size:14px;
+  color: var(--on-surface); outline:none; transition:border-color 0.2s;
+}
+.form-field input:focus, .form-field textarea:focus, .form-field select:focus {
+  border-color: var(--primary); border-width: 2px;
+}
+.form-field textarea { resize:vertical; min-height:120px; }
+.form-submit {
+  width:100%; padding:14px; border-radius:28px; border:none;
+  background: var(--primary); color: var(--on-primary);
+  font-size:15px; font-weight:500; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  transition: all 0.2s;
+}
+.form-submit:hover { box-shadow: 0 4px 16px rgba(103,80,164,0.3); }
+.form-submit:disabled { opacity:0.5; cursor:not-allowed; }
+.form-msg {
+  padding: 12px 16px; border-radius:12px; font-size:14px;
+  margin-top:16px; display:none;
+}
+.form-msg.show { display:block; }
+.form-msg.success { background:var(--primary-container); color:var(--on-primary-container); }
+.form-msg.error { background:var(--error-container); color:var(--on-error-container); }
+
+/* 页脚 */
+.footer {
+  background: var(--inverse-surface);
+  color: var(--inverse-on-surface);
+  padding: 48px 24px;
+  text-align: center;
+}
+.footer .logo { display:flex; align-items:center; gap:8px; justify-content:center; margin-bottom:16px; }
+.footer .logo .material-symbols-rounded { font-size:24px; color:var(--inverse-primary); }
+.footer .logo span { font-size:16px; font-weight:500; }
+.footer .links { display:flex; gap:24px; justify-content:center; margin-bottom:16px; }
+.footer .links a { font-size:14px; color:var(--inverse-on-surface); opacity:0.8; transition:opacity 0.2s; }
+.footer .links a:hover { opacity:1; }
+.footer .copyright { font-size:13px; opacity:0.6; }
+.footer .email { font-size:14px; margin-top:8px; opacity:0.8; }
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 36px; }
+  .preview-grid { grid-template-columns: 1fr; }
+  .nav-links a { display:none; }
+  .nav-links a:last-child { display:inline-flex; }
+  .download-section, .feedback-section { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 导航 -->
+<nav class="nav">
+  <div class="nav-logo">
+    <span class="material-symbols-rounded">code</span>
+    <span>Codexa</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">功能</a>
+    <a href="#preview">预览</a>
+    <a href="#download">下载</a>
+    <a href="#feedback">反馈</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-icon">
+    <span class="material-symbols-rounded">code</span>
+  </div>
+  <h1>Codexa</h1>
+  <p class="tagline">一款基于 Material 3 的本地代码编辑器，支持多语言编辑与一键运行，轻量、高效、纯粹。</p>
+  <div class="hero-buttons">
+    <a href="#download" class="btn-filled">
+      <span class="material-symbols-rounded" style="font-size:20px;">download</span>
+      立即下载
+    </a>
+    <a href="#features" class="btn-tonal">
+      <span class="material-symbols-rounded" style="font-size:20px;">explore</span>
+      了解更多
+    </a>
+  </div>
+</section>
+
+<!-- 功能 -->
+<section class="section" id="features">
+  <h2 class="section-title">核心功能</h2>
+  <p class="section-desc">为开发者打造的实用工具集</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon"><span class="material-symbols-rounded">edit_note</span></div>
+      <h3>多语言代码编辑</h3>
+      <p>支持 Python、JavaScript、C#、Go、Ruby、PHP 等 10+ 语言的语法编辑，行号显示、自动缩进、括号匹配一应俱全。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><span class="material-symbols-rounded">play_circle</span></div>
+      <h3>一键运行</h3>
+      <p>自动检测系统语言环境，无需配置即可运行代码，运行结果实时显示在独立输出区域。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><span class="material-symbols-rounded">folder</span></div>
+      <h3>文件目录管理</h3>
+      <p>完整的工作区文件树，支持新建文件夹、新建文件、导入文件，右键菜单提供更多操作。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><span class="material-symbols-rounded">terminal</span></div>
+      <h3>运行日志追踪</h3>
+      <p>所有运行操作自动记录日志，支持按级别过滤、按日期搜索，方便回溯问题。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><span class="material-symbols-rounded">settings</span></div>
+      <h3>丰富的设置项</h3>
+      <p>9 大类设置覆盖编辑器、运行、外观、快捷键等，字体、缩进、行高、编码格式均可自定义。</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><span class="material-symbols-rounded">security</span></div>
+      <h3>本地数据持久化</h3>
+      <p>所有文件和设置保存在本地，不依赖云端，保护你的代码隐私。数据通过 IndexedDB 持久化。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 预览 -->
+<section class="section" id="preview">
+  <h2 class="section-title">界面预览</h2>
+  <p class="section-desc">Material 3 Purple 浅色主题</p>
+  <div class="preview-grid">
+    <div class="preview-card">
+      <img src="主界面.png" alt="主界面" style="width:100%;height:100%;object-fit:cover;">
+      <div class="label">主界面</div>
+    </div>
+    <div class="preview-card">
+      <img src="运行界面.png" alt="运行界面" style="width:100%;height:100%;object-fit:cover;">
+      <div class="label">运行界面</div>
+    </div>
+    <div class="preview-card">
+      <img src="设置界面.png" alt="设置界面" style="width:100%;height:100%;object-fit:cover;">
+      <div class="label">设置界面</div>
+    </div>
+    <div class="preview-card">
+      <img src="日志界面.png" alt="日志界面" style="width:100%;height:100%;object-fit:cover;">
+      <div class="label">日志界面</div>
+    </div>
+  </div>
+</section>
+
+<!-- 下载 -->
+<section class="section" id="download">
+  <div class="download-section">
+    <span class="material-symbols-rounded" style="font-size:48px;color:var(--primary);margin-bottom:16px;">download</span>
+    <h2>下载 Codexa</h2>
+    <p>Windows 桌面应用，开箱即用</p>
+    <div class="download-info">
+      <span class="material-symbols-rounded" style="font-size:16px;">info</span>
+      <span>Windows 10/11 · v1.0.0 · 免费</span>
+    </div>
+    <div>
+      <a href="https://1851684213.share.123pan.cn/123pan/F8XBvd-sfpp3" target="_blank" class="btn-filled" style="font-size:16px;padding:16px 40px;">
+        <span class="material-symbols-rounded" style="font-size:20px;">download</span>
+        下载 Codexa.exe
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 反馈 -->
+<section class="section" id="feedback">
+  <div class="feedback-section">
+    <h2>意见反馈</h2>
+    <p class="desc">遇到问题或有建议？告诉我们（每3天可提交一次）</p>
+    <form id="feedbackForm" onsubmit="submitFeedback(event)">
+      <div class="form-field">
+        <label>姓名 / 昵称</label>
+        <input type="text" id="fbName" required placeholder="您的称呼">
+      </div>
+      <div class="form-field">
+        <label>联系邮箱</label>
+        <input type="email" id="fbEmail" required placeholder="your@email.com">
+      </div>
+      <div class="form-field">
+        <label>反馈类型</label>
+        <select id="fbSubject" required>
+          <option value="">请选择</option>
+          <option value="Bug 报告">Bug 报告</option>
+          <option value="功能建议">功能建议</option>
+          <option value="使用问题">使用问题</option>
+          <option value="其他反馈">其他反馈</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>详细内容</label>
+        <textarea id="fbMessage" required placeholder="请详细描述您的问题或建议（至少10个字）"></textarea>
+      </div>
+      <button type="submit" class="form-submit" id="fbSubmit">
+        <span class="material-symbols-rounded" style="font-size:20px;">send</span>
+        发送反馈
+      </button>
+      <div class="form-msg" id="fbMsg"></div>
+    </form>
+  </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="footer">
+  <div class="logo">
+    <span class="material-symbols-rounded">code</span>
+    <span>Codexa</span>
+  </div>
+  <div class="links">
+    <a href="#features">功能</a>
+    <a href="#download">下载</a>
+    <a href="#feedback">反馈</a>
+    <a href="mailto:849817623@qq.com">联系客服</a>
+  </div>
+  <div class="email">客服邮箱：849817623@qq.com</div>
+  <div class="copyright">© 2026 Codexa · Material 3 Purple · MIT License</div>
+</footer>
+
+<script>
+// 反馈限频：localStorage 记录，3天一次
+const FEEDBACK_KEY = 'codexa_feedback_time';
+const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+
+function getRemainingTime() {
+  const last = parseInt(localStorage.getItem(FEEDBACK_KEY) || '0');
+  const elapsed = Date.now() - last;
+  const remaining = THREE_DAYS - elapsed;
+  if (remaining <= 0) return null;
+  const hours = Math.floor(remaining / 3600000);
+  const minutes = Math.floor((remaining % 3600000) / 60000);
+  return hours + '小时' + minutes + '分钟';
+}
+
+function checkFeedbackStatus() {
+  const remaining = getRemainingTime();
+  if (remaining) {
+    const btn = document.getElementById('fbSubmit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:20px;">schedule</span>还需等待 ' + remaining;
+    const msg = document.getElementById('fbMsg');
+    msg.className = 'form-msg show error';
+    msg.textContent = '您已提交过反馈，每3天限一次。剩余等待时间：' + remaining;
+  }
+}
+
+// 提交反馈：通过 mailto 打开邮箱客户端
+function submitFeedback(e) {
+  e.preventDefault();
+  const name = document.getElementById('fbName').value.trim();
+  const email = document.getElementById('fbEmail').value.trim();
+  const subject = document.getElementById('fbSubject').value;
+  const message = document.getElementById('fbMessage').value.trim();
+  const msgEl = document.getElementById('fbMsg');
+  const btn = document.getElementById('fbSubmit');
+
+  if (message.length < 10) {
+    msgEl.className = 'form-msg show error';
+    msgEl.textContent = '反馈内容至少10个字';
+    return;
+  }
+
+  // 限频检查
+  const remaining = getRemainingTime();
+  if (remaining) {
+    msgEl.className = 'form-msg show error';
+    msgEl.textContent = '您已提交过反馈，每3天限一次。剩余等待时间：' + remaining;
+    return;
+  }
+
+  // 构建 mailto 链接
+  const mailSubject = '[Codexa 反馈] ' + subject;
+  const mailBody = [
+    '=== Codexa 用户反馈 ===',
+    '',
+    '姓名/昵称: ' + name,
+    '联系邮箱: ' + email,
+    '反馈类型: ' + subject,
+    '提交时间: ' + new Date().toLocaleString('zh-CN'),
+    '',
+    '--- 反馈内容 ---',
+    message,
+    '--- 内容结束 ---'
+  ].join('\n');
+
+  const mailto = 'mailto:849817623@qq.com?subject=' + encodeURIComponent(mailSubject) + '&body=' + encodeURIComponent(mailBody);
+
+  // 记录提交时间
+  localStorage.setItem(FEEDBACK_KEY, Date.now().toString());
+
+  // 打开邮箱客户端
+  window.location.href = mailto;
+
+  msgEl.className = 'form-msg show success';
+  msgEl.textContent = '已打开您的邮箱客户端，请确认发送邮件到 849817623@qq.com';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:20px;">check</span>已打开邮箱';
+  document.getElementById('feedbackForm').reset();
+  setTimeout(() => {
+    checkFeedbackStatus();
+  }, 500);
+}
+
+checkFeedbackStatus();
+</script>
+<style>
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+</style>
+</body>
+</html>
